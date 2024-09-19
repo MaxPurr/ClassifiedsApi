@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ClassifiedsApi.Domain.Base;
 
 namespace ClassifiedsApi.Domain.Entities;
@@ -9,27 +11,27 @@ public class User : BaseEntity {
     /// <summary>
     /// Логин.
     /// </summary>
-    public string Login { get; set; }
+    public string Login { get; set; } = "";
 
     /// <summary>
     /// Хэш пароля.
     /// </summary>
-    public string PasswordHash { get; set; }
+    public string PasswordHash { get; set; } = "";
 
     /// <summary>
     /// Имя.
     /// </summary>
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = "";
 
     /// <summary>
     /// Фамилия.
     /// </summary>
-    public string LastName { get; set; }
+    public string LastName { get; set; } = "";
 
     /// <summary>
     /// Адрес электронной почты.
     /// </summary>
-    public string Email { get; set; }
+    public string Email { get; set; } = "";
 
     /// <summary>
     /// Верифицирована ли электронная почта.
@@ -47,7 +49,19 @@ public class User : BaseEntity {
     public DateTime BirthDate { get; set; }
 
     /// <summary>
+    /// Идентификатор фотографии профиля.
+    /// </summary>
+    public Guid? PhotoId { get; set; }
+
+    /// <summary>
     /// Объявления.
     /// </summary>
-    public ICollection<Advert> Adverts { get; set; }
+    public ICollection<Advert> Adverts { get; set; } = null!;
+
+    /// <summary>
+    /// Избранные объявления.
+    /// </summary>
+    public ICollection<Advert> LikedAdverts { get; set; } = null!;
+    
+    public ICollection<UserFavoriteAdvert> UserFavoriteAdverts { get; set; } = null!;
 }

@@ -9,7 +9,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder.ToTable("Categories").HasKey(category => category.Id);
-        builder.Property(category => category.Name).HasMaxLength(100).IsRequired();
+        builder.Property(category => category.CreatedAt).IsRequired();
+        builder.Property(category => category.Name).HasMaxLength(255).IsRequired();
         builder.HasMany(category => category.ChildCategories)
             .WithOne(category => category.ParentCategory)
             .HasForeignKey(category => category.ParentId)

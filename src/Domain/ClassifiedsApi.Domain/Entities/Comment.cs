@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ClassifiedsApi.Domain.Base;
 
 namespace ClassifiedsApi.Domain.Entities;
@@ -5,11 +7,12 @@ namespace ClassifiedsApi.Domain.Entities;
 /// <summary>
 /// Модель комментария к объявлению.
 /// </summary>
-public class Comment : BaseEntity {
+public class Comment : BaseEntity
+{
     /// <summary>
     /// Текст.
     /// </summary>
-    public string Text { get; set; }
+    public string Text { get; set; } = "";
 
     /// <summary>
     /// Идентификатор родительского комментария.
@@ -19,30 +22,30 @@ public class Comment : BaseEntity {
     /// <summary>
     /// Родительский комментарий.
     /// </summary>
-    public Comment? ParrentComment { get; set; }
+    public Comment? ParentComment { get; set; }
 
     /// <summary>
     /// Дочернии комментарии.
     /// </summary>
-    public ICollection<Comment> ChildComments { get; set; }
+    public ICollection<Comment> ChildComments { get; set; } = null!;
 
     /// <summary>
     /// Идентификатор пользователя.
     /// </summary>
     public Guid UserId { get; set; }
-    
+
     /// <summary>
     /// Пользователь.
     /// </summary>
-    public User User { get; set; }
+    public User User { get; set; } = null!;
 
     /// <summary>
     /// Идентификатор объявления.
     /// </summary>
     public Guid AdvertId { get; set; }
-    
+
     /// <summary>
     /// Обьявление.
     /// </summary>
-    public Advert Advert { get; set; }
+    public Advert Advert { get; set; } = null!;
 }
