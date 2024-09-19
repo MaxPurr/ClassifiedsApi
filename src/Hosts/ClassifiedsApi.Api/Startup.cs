@@ -1,3 +1,8 @@
+using ClassifiedsApi.Api.Extensions;
+using ClassifiedsApi.Api.Middlewares;
+using ClassifiedsApi.DataAccess;
+using Microsoft.EntityFrameworkCore;
+
 namespace ClassifiedsApi.Api;
 
 public class Startup {
@@ -10,9 +15,11 @@ public class Startup {
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddSwaggerGen(options =>
+        services.AddSwaggerGenWithComments();
+        services.AddDbContext<DataBaseContext>(options =>
         {
-            
+            var connectionString = _configuration.GetConnectionString("ConnectionString");
+            options.UseNpgsql(connectionString);
         });
         services.AddControllers();
     }
@@ -24,6 +31,7 @@ public class Startup {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseEndpoints(endpoints =>

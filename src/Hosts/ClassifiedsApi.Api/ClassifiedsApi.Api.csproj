@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Application\ClassifiedsApi.AppServices\ClassifiedsApi.AppServices.csproj" />
       <ProjectReference Include="..\..\Contracts\ClassifiedsApi.Contracts\ClassifiedsApi.Contracts.csproj" />
       <ProjectReference Include="..\..\Infrastructure\ClassifiedsApi.ComponentRegistrar\ClassifiedsApi.ComponentRegistrar.csproj" />
