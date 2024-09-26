@@ -1,8 +1,15 @@
+using System;
+using System.IO;
 using System.Net;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Unicode;
+using System.Threading.Tasks;
+using ClassifiedsApi.AppServices.Exceptions.Common;
 using ClassifiedsApi.Contracts.Common;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 namespace ClassifiedsApi.Api.Middlewares;
 
@@ -16,6 +23,7 @@ public class ExceptionHandlingMiddleware
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
     
     private readonly RequestDelegate _next;
@@ -29,12 +37,7 @@ public class ExceptionHandlingMiddleware
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
     }
-
-    private static string GetJson(ApiError apiError)
-    {
-        return JsonSerializer.Serialize(apiError, JsonSerializerOptions);
-    }
-
+    
     public async Task InvokeAsync(HttpContext context, IHostEnvironment environment, IServiceProvider serviceProvider)
     {
         try
@@ -45,43 +48,57 @@ public class ExceptionHandlingMiddleware
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = GetStatusCode(exception);
-            var apiError = CreateApiErrorByEnvironment(exception, environment);
-            await context.Response.WriteAsync(GetJson(apiError));
+            var apiError = CreateApiErrorByEnvironment(exception, context, environment);
+            await context.Response.WriteAsync(Serialize(apiError));
         }
     }
 
-    private ApiError CreateApiErrorByEnvironment(Exception exception, IHostEnvironment environment)
+    private static string Serialize(ApiError apiError)
+    {
+        return JsonSerializer.Serialize(apiError, JsonSerializerOptions);
+    }
+    
+    private static int GetStatusCode(Exception exception)
+    {
+        var statusCode = exception switch
+        {
+            EntityNotFoundException => HttpStatusCode.NotFound,
+            _ => HttpStatusCode.InternalServerError,
+        };
+        return (int)statusCode;
+    }
+    
+    private static ApiError CreateApiErrorByEnvironment(Exception exception, HttpContext context, IHostEnvironment environment)
     {
         if (environment.IsDevelopment())
         {
             return new ApiError()
             {
                 Message = exception.Message,
-                Description = exception.StackTrace,
                 Code = ((int)(HttpStatusCode.InternalServerError)).ToString(),
+                Description = exception.StackTrace,
+                TraceId = context.TraceIdentifier
             };
         }
-        return CreateApiError(exception);
+        return CreateApiError(exception, context);
     }
 
-    private ApiError CreateApiError(Exception exception)
+    private static ApiError CreateApiError(Exception exception, HttpContext context)
     {
         return exception switch
         {
+            EntityNotFoundException e => new ApiError()
+            {
+                Message = e.Message,
+                Code = ((int)(HttpStatusCode.NotFound)).ToString(),
+                TraceId = context.TraceIdentifier
+            },
             _ => new ApiError()
             {
                 Message = "Произошла непредвиденая ошибка.",
-                Code = ((int)(HttpStatusCode.InternalServerError)).ToString()
+                Code = ((int)(HttpStatusCode.InternalServerError)).ToString(),
+                TraceId = context.TraceIdentifier
             }
         };
-    }
-    
-    private int GetStatusCode(Exception exception)
-    {
-        HttpStatusCode statusCode = exception switch
-        {
-            _ => HttpStatusCode.InternalServerError,
-        };
-        return (int)statusCode;
     }
 }

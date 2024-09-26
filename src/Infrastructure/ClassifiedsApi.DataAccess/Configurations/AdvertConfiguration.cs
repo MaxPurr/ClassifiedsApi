@@ -13,7 +13,7 @@ public class AdvertConfiguration :  IEntityTypeConfiguration<Advert>
         builder.Property(advert => advert.Title).HasMaxLength(255).IsRequired();
         builder.Property(advert => advert.Description).HasMaxLength(1000).IsRequired();
         builder.Property(advert => advert.Price).HasColumnType("decimal(18,2)").IsRequired();
-        builder.HasMany(advert => advert.Photos)
+        builder.HasMany(advert => advert.Images)
             .WithOne(advertPhoto => advertPhoto.Advert)
             .HasForeignKey(advertPhoto => advertPhoto.AdvertId)
             .IsRequired()

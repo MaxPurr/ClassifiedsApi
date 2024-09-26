@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Contexts\Categories\" />
+      <Folder Include="Contexts\Comments\" />
+    </ItemGroup>
+
 </Project>

@@ -1,4 +1,4 @@
-using ClassifiedsApi.DbMigrator.DbContext;
+using ClassifiedsApi.DbMigrator.DbContexts;
 using ClassifiedsApi.DbMigrator.Extensions;
 using Microsoft.EntityFrameworkCore;
 

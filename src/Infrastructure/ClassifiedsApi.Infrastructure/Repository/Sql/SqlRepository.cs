@@ -1,14 +1,13 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ClassifiedsApi.Domain.Base;
 
-namespace ClassifiedsApi.Infrastructure.Repository;
+namespace ClassifiedsApi.Infrastructure.Repository.Sql;
 
-public class Repository<TEntity, TContext> : IRepository<TEntity, TContext> 
+public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext> 
     where TEntity : class 
     where TContext : DbContext
 {
-    public Repository(TContext context)
+    public SqlRepository(TContext context)
     {
         DbContext = context;
         DbSet = DbContext.Set<TEntity>();

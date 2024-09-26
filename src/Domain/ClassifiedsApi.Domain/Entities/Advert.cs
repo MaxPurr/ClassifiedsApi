@@ -52,7 +52,7 @@ public class Advert : BaseEntity
     /// <summary>
     /// Фотографии.
     /// </summary>
-    public ICollection<AdvertPhoto> Photos { get; set; } = null!;
+    public ICollection<AdvertImage> Images { get; set; } = null!;
     
     /// <summary>
     /// Пользователи, которым понравилось объявление.

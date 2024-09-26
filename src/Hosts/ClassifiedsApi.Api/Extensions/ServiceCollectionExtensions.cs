@@ -1,4 +1,11 @@
+using System;
+using System.IO;
+using ClassifiedsApi.Api.Settings;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace ClassifiedsApi.Api.Extensions;
 
@@ -27,6 +34,17 @@ public static class ServiceCollectionExtensions
                 }
             }
         });
+        return services;
+    }
+
+    public static IServiceCollection AddGridFsBucket(this IServiceCollection services, IConfiguration configuration)
+    {
+        var mongoDbSettings = configuration.GetRequiredSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+        string connectionString = mongoDbSettings!.ConnectionString;
+        string databaseName = mongoDbSettings!.DatabaseName;
+        var mongoClient = new MongoClient(connectionString);
+        var database = mongoClient.GetDatabase(databaseName);
+        services.AddSingleton<IGridFSBucket>(_ => new GridFSBucket(database));
         return services;
     }
 }

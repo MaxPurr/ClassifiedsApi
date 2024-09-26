@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: local-postgres
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_DB=classifieds-db"
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+    ports:
+      - "5432:5432"
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - '27017:27017'

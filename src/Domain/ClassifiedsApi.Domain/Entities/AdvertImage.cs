@@ -6,12 +6,12 @@ namespace ClassifiedsApi.Domain.Entities;
 /// <summary>
 /// Модель фотографии объявления.
 /// </summary>
-public class AdvertPhoto : BaseEntity
+public class AdvertImage : BaseEntity
 {
     /// <summary>
     /// Идентификатор фотографии.
     /// </summary>
-    public Guid PhotoId { get; set; }
+    public String ImageId { get; set; } = "";
     
     /// <summary>
     /// Идентификатор объявления.

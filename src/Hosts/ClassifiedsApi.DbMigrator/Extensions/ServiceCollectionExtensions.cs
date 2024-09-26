@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ClassifiedsApi.DbMigrator.DbContext;
+using ClassifiedsApi.DbMigrator.DbContexts;
 
 namespace ClassifiedsApi.DbMigrator.Extensions;
 
@@ -12,8 +12,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection ConfigureDbConnection(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("ConnectionString");
-        Console.WriteLine($"Connection string: {connectionString}");
+        var connectionString = configuration.GetConnectionString("ApplicationDbConnectionString");
         services.AddDbContext<MigrationDbContext>(options =>
         {
             options.UseNpgsql(connectionString);

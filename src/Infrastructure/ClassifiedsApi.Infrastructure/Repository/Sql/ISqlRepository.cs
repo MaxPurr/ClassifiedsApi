@@ -1,10 +1,9 @@
 using System.Linq.Expressions;
-using ClassifiedsApi.Domain.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClassifiedsApi.Infrastructure.Repository;
+namespace ClassifiedsApi.Infrastructure.Repository.Sql;
 
-public interface IRepository<TEntity, TContext> 
+public interface ISqlRepository<TEntity, TContext> 
     where TEntity : class 
     where TContext : DbContext
 {
