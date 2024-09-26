@@ -8,18 +8,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedsApi.Api.Controllers;
 
+/// <summary>
+/// Контроллер для работы с файлами.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
 public class FileController : ControllerBase
 {
     private readonly IFileService _service;
-
+    
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="FileController"/>.
+    /// </summary>
+    /// <param name="service">Сервис для работы с файлами <see cref="IFileService"/>.</param>
     public FileController(IFileService service)
     {
         _service = service;
     }
-
+    
+    /// <summary>
+    /// Метод для отправки файла на сервер.
+    /// </summary>
+    /// <param name="file">Файл <see cref="IFormFile"/>.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Идентификатор отправленного файла.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Created)]
     public async Task<IActionResult> UploadAsync(IFormFile file, CancellationToken token)
@@ -34,6 +47,12 @@ public class FileController : ControllerBase
         return StatusCode((int)HttpStatusCode.Created, id);
     }
     
+    /// <summary>
+    /// Метод для получения информации о файле по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор файла.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Модель информации о файле <see cref="FileInfo"/>.</returns>
     [HttpGet("{id}/info")]
     [ProducesResponseType(typeof(FileInfo), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -42,9 +61,15 @@ public class FileController : ControllerBase
         var fileInfo = await _service.GetFileInfoAsync(id, token);
         return Ok(fileInfo);
     }
-
+    
+    /// <summary>
+    /// Метод для скачивания файла с сервера по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор файла.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(FileDownload), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> DownloadAsync(string id, CancellationToken token)
     {
@@ -53,6 +78,12 @@ public class FileController : ControllerBase
         return File(fileDownload.ReadStream, fileDownload.ContentType, fileDownload.Name);
     }
     
+    /// <summary>
+    /// Метод для удаления файла по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор файла.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
     [HttpDelete("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
