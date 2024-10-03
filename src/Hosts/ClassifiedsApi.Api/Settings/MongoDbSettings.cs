@@ -1,7 +1,17 @@
 namespace ClassifiedsApi.Api.Settings;
 
+/// <summary>
+/// Параметры подключения к MongoDB.
+/// </summary>
 public class MongoDbSettings
 {
-    public string ConnectionString { get; set; } = null!;
-    public string DatabaseName { get; set; } = null!;
+    /// <summary>
+    /// Строка подключения.
+    /// </summary>
+    public string ConnectionString { get; set; } = "";
+    
+    /// <summary>
+    /// Название базы данных.
+    /// </summary>
+    public string DatabaseName { get; set; } = "";
 }

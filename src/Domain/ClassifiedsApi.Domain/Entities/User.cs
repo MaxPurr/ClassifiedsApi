@@ -36,7 +36,7 @@ public class User : BaseEntity {
     /// <summary>
     /// Верифицирована ли электронная почта.
     /// </summary>
-    public bool IsEmailVerified { get; set; }
+    public bool EmailVerified { get; set; }
 
     /// <summary>
     /// Номер телефона.
@@ -52,6 +52,13 @@ public class User : BaseEntity {
     /// Идентификатор фотографии профиля.
     /// </summary>
     public Guid? PhotoId { get; set; }
+    
+    /// <summary>
+    /// Роли пользователя.
+    /// </summary>
+    public ICollection<Role> Roles { get; set; } = null!;
+    
+    public ICollection<UserRole> UserRoles { get; set; } = null!;
 
     /// <summary>
     /// Объявления.

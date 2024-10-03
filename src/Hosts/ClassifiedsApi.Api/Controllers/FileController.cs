@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
 using ClassifiedsApi.Contracts.Contexts.Files;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +36,7 @@ public class FileController : ControllerBase
     /// <returns>Идентификатор отправленного файла.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(string), (int)HttpStatusCode.Created)]
+    [Authorize]
     public async Task<IActionResult> UploadAsync(IFormFile file, CancellationToken token)
     {
         var fileUpload = new FileUpload

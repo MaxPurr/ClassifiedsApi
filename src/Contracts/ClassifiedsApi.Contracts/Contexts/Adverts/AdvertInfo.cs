@@ -23,5 +23,5 @@ public class AdvertInfo
     /// <summary>
     /// Идентификаторы фотографий.
     /// </summary>
-    public ICollection<Guid> PhotoIds { get; set; } = null!;
+    public ICollection<String> ImageIds { get; set; } = null!;
 }

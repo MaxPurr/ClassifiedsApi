@@ -1,6 +1,7 @@
 using ClassifiedsApi.Api.Extensions;
 using ClassifiedsApi.Api.Middlewares;
 using ClassifiedsApi.Api.Settings;
+using ClassifiedsApi.AppServices.Settings;
 using ClassifiedsApi.ComponentRegistrar;
 using ClassifiedsApi.DataAccess.DbContexts;
 using Microsoft.AspNetCore.Builder;
@@ -22,15 +23,19 @@ public class Startup {
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddConfiguredAuthentication(_configuration);
+        services.AddAuthorization();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGenWithComments();
+        services.AddConfiguredSwaggerGen(_configuration);
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             var connectionString = _configuration.GetConnectionString("ApplicationDbConnectionString");
             options.UseNpgsql(connectionString);
         });
-        services.AddGridFsBucket(_configuration);
+        services.Configure<MongoDbSettings>(_configuration.GetSection(nameof(MongoDbSettings)));
+        services.Configure<JwtSettings>(_configuration.GetSection(nameof(JwtSettings)));
+        services.AddGridFsBucket();
         services.AddApplicationServices();
     }
 
@@ -44,6 +49,8 @@ public class Startup {
         app.UseMiddleware<ExceptionHandlingMiddleware>();
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         { 
             endpoints.MapControllers();

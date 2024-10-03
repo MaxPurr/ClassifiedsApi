@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Threading.Tasks;
+using ClassifiedsApi.AppServices.Exceptions.Accounts;
 using ClassifiedsApi.AppServices.Exceptions.Common;
 using ClassifiedsApi.Contracts.Common;
 using Microsoft.AspNetCore.Http;
@@ -63,6 +64,7 @@ public class ExceptionHandlingMiddleware
         var statusCode = exception switch
         {
             EntityNotFoundException => HttpStatusCode.NotFound,
+            IncorrectCredentialsException => HttpStatusCode.Unauthorized,
             _ => HttpStatusCode.InternalServerError,
         };
         return (int)statusCode;
@@ -90,13 +92,19 @@ public class ExceptionHandlingMiddleware
             EntityNotFoundException e => new ApiError()
             {
                 Message = e.Message,
-                Code = ((int)(HttpStatusCode.NotFound)).ToString(),
+                Code = ((int)HttpStatusCode.NotFound).ToString(),
+                TraceId = context.TraceIdentifier
+            },
+            IncorrectCredentialsException => new ApiError()
+            {
+                Message = "Неверное имя пользователя или пароль",
+                Code = ((int)HttpStatusCode.Unauthorized).ToString(),
                 TraceId = context.TraceIdentifier
             },
             _ => new ApiError()
             {
                 Message = "Произошла непредвиденая ошибка.",
-                Code = ((int)(HttpStatusCode.InternalServerError)).ToString(),
+                Code = ((int)HttpStatusCode.InternalServerError).ToString(),
                 TraceId = context.TraceIdentifier
             }
         };

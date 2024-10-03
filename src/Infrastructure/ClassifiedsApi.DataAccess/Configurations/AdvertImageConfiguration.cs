@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ClassifiedsApi.DataAccess.Configurations;
 
-public class AdvertPImageConfiguration : IEntityTypeConfiguration<AdvertImage>
+public class AdvertImageConfiguration : IEntityTypeConfiguration<AdvertImage>
 {
     public void Configure(EntityTypeBuilder<AdvertImage> builder)
     {
