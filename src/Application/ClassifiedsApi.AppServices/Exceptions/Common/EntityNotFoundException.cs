@@ -1,9 +1,29 @@
-using System;
+using System.Net;
+using ClassifiedsApi.Contracts.Common.Errors;
 
 namespace ClassifiedsApi.AppServices.Exceptions.Common;
 
-public class EntityNotFoundException : Exception
+/// <summary>
+/// Исключение, возникающее когда искомая сущность не была найдена.
+/// </summary>
+public abstract class EntityNotFoundException : ApiException
 {
-    public EntityNotFoundException() : this("Сущность не была найдена.") { }
-    public EntityNotFoundException(string message) : base(message) { }
+    /// <summary>
+    /// Инициализирует экземпляр <see cref="EntityNotFoundException"/>.
+    /// </summary>
+    /// <param name="message">Сообщение об ошибке.</param>
+    protected EntityNotFoundException(string message) : base(message, HttpStatusCode.NotFound)
+    {
+        
+    }
+    
+    /// <inheritdoc />
+    public override ApiError ToApiError()
+    {
+        return new ApiError
+        {
+            Message = Message,
+            Code = ((int)HttpStatusCode.NotFound).ToString(),
+        };
+    }
 }

@@ -3,50 +3,63 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.Domain.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApi.Infrastructure.Repository.Sql;
 
+/// <inheritdoc />
 public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext> 
-    where TEntity : class 
+    where TEntity : class, ISqlEntity 
     where TContext : DbContext
 {
+    private readonly TContext _dbContext;
+    private readonly DbSet<TEntity> _dbSet;
+    
+    /// <summary>
+    /// Инициализирует экземпляр класса <see cref="SqlRepository{TEntity, TContext}"></see>.
+    /// </summary>
+    /// <param name="context">Контекст базы данных.</param>
     public SqlRepository(TContext context)
     {
-        DbContext = context;
-        DbSet = DbContext.Set<TEntity>();
+        _dbContext = context;
+        _dbSet = _dbContext.Set<TEntity>();
     }
     
-    protected TContext DbContext { get; set; }
-    protected DbSet<TEntity> DbSet { get; set; }
-    
+    /// <inheritdoc />
     public IQueryable<TEntity> GetAll()
     {
-        return DbSet;
+        return _dbSet;
     }
-
+    
+    /// <inheritdoc />
     public IQueryable<TEntity> GetByPredicate(Expression<Func<TEntity, bool>> predicate)
     {
-        return DbSet.Where(predicate);
+        return _dbSet.Where(predicate);
     }
-
+    
+    /// <inheritdoc />
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken token)
     {
-        return await DbSet.FindAsync([id], token);
+        return await GetByPredicate(entity => entity.Id == id)
+            .FirstOrDefaultAsync(token);
     }
 
+    /// <inheritdoc />
     public async Task AddAsync(TEntity model, CancellationToken token)
     {
-        await DbSet.AddAsync(model, token);
-        await DbContext.SaveChangesAsync(token);
+        await _dbSet.AddAsync(model, token);
+        await _dbContext.SaveChangesAsync(token);
     }
-
+    
+    /// <inheritdoc />
     public async Task UpdateAsync(TEntity model, CancellationToken token)
     {
-        DbSet.Update(model);
-        await DbContext.SaveChangesAsync(token);
+        _dbSet.Update(model);
+        await _dbContext.SaveChangesAsync(token);
     }
 
+    /// <inheritdoc />
     public async Task<bool> DeleteAsync(Guid id, CancellationToken token)
     {
         var entity = await GetByIdAsync(id, token);
@@ -54,8 +67,14 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
         {
             return false;
         }
-        DbSet.Remove(entity);
-        await DbContext.SaveChangesAsync(token);
+        _dbSet.Remove(entity);
+        await _dbContext.SaveChangesAsync(token);
         return true;
+    }
+
+    /// <inheritdoc />
+    public Task<bool> IsExistAsync(Guid id, CancellationToken token)
+    {
+        return _dbSet.AnyAsync(entity => entity.Id == id, token);
     }
 }

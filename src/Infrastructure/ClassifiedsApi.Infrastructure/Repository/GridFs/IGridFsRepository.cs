@@ -14,9 +14,9 @@ public interface IGridFsRepository
     /// <summary>
     /// Метод для загрузки файла.
     /// </summary>
-    /// <param name="fileName">Имя файла <see cref="String"/>.</param>
+    /// <param name="fileName">Имя файла <see cref="string"/>.</param>
     /// <param name="source">Поток для чтения файла <see cref="Stream"/>.</param>
-    /// <param name="contentType">Тип контента <see cref="String"/>.</param>
+    /// <param name="contentType">Тип контента <see cref="string"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Идентификатор файла <see cref="ObjectId"/>.</returns>
     Task<ObjectId> UploadAsync(string fileName, Stream source, string contentType, CancellationToken token);

@@ -9,11 +9,11 @@ namespace ClassifiedsApi.ComponentRegistrar.MapProfiles;
 
 public class AccountProfile : Profile
 {
-    public AccountProfile()
+    public AccountProfile(TimeProvider timeProvider)
     {
         CreateMap<AccountRegister, User>(MemberList.None)
             .ForMember(user => user.Id, map => map.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(user => user.CreatedAt, map => map.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(user => user.CreatedAt, map => map.MapFrom(_ => timeProvider.GetUtcNow().UtcDateTime))
             .ForMember(user => user.PasswordHash, 
                 map => map.MapFrom(register => CryptoHelper.GetBase64Hash(register.Password)));
 

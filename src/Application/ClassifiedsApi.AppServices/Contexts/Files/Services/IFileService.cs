@@ -23,7 +23,7 @@ public interface IFileService
     /// <param name="id">Идентификатор файла.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Модель информации о файле <see cref="FileInfo"/>.</returns>
-    Task<FileInfo> GetFileInfoAsync(string id, CancellationToken token);
+    Task<FileInfo> GetInfoAsync(string id, CancellationToken token);
     
     /// <summary>
     /// Метод для скачивания файла.

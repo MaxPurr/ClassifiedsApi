@@ -33,12 +33,12 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Метод для регистрации нового аккаунта.
     /// </summary>
-    /// <param name="accountRegister">Модель регистрации нового аккаунта <see cref="AccountRegister"/>.</param>
-    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <param name="accountRegister">Модель регистрации нового аккаунта.</param>
+    /// <param name="token">Токен отмены операции.</param>
     /// <returns>Идентификатор нового аккаунта.</returns>
     [HttpPost("register")]
     [ProducesResponseType(typeof(Guid) ,(int)HttpStatusCode.Created)]
-    public async Task<IActionResult> RegisterAsync(AccountRegister accountRegister, CancellationToken token)
+    public async Task<IActionResult> RegisterAsync([FromBody] AccountRegister accountRegister, CancellationToken token)
     {
         var id = await _accountService.RegisterAsync(accountRegister, token);
         return StatusCode((int)HttpStatusCode.Created, id);
@@ -47,12 +47,12 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Метод для получения токена доступа.
     /// </summary>
-    /// <param name="accountVerify">Модель для проверки учетных данных аккаунта <see cref="AccountVerify"/>.</param>
-    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <param name="accountVerify">Модель для проверки учетных данных аккаунта.</param>
+    /// <param name="token">Токен отмены операции.</param>
     /// <returns>Токен доступа.</returns>
     [HttpPost("token")]
     [ProducesResponseType(typeof(AccessToken) ,(int)HttpStatusCode.OK)]
-    public async Task<IActionResult> LoginAsync(AccountVerify accountVerify, CancellationToken token)
+    public async Task<IActionResult> LoginAsync([FromBody] AccountVerify accountVerify, CancellationToken token)
     {
         var accountInfo = await _accountService.GetInfoAsync(accountVerify, token);
         var accessToken = _jwtService.GetToken(accountInfo);

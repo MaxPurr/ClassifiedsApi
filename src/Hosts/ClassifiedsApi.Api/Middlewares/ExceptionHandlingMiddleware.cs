@@ -1,16 +1,14 @@
 using System;
-using System.IO;
 using System.Net;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Unicode;
 using System.Threading.Tasks;
-using ClassifiedsApi.AppServices.Exceptions.Accounts;
 using ClassifiedsApi.AppServices.Exceptions.Common;
-using ClassifiedsApi.Contracts.Common;
+using ClassifiedsApi.AppServices.Extensions;
+using ClassifiedsApi.Contracts.Common.Errors;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ClassifiedsApi.Api.Middlewares;
 
@@ -19,18 +17,21 @@ namespace ClassifiedsApi.Api.Middlewares;
 /// </summary>
 public class ExceptionHandlingMiddleware
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions()
+    private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
     {
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        NullValueHandling = NullValueHandling.Ignore,
+        ContractResolver = new CamelCasePropertyNamesContractResolver()
+    };
+
+    private static readonly ApiError DefaultApiError = new ApiError{
+        Message = "Произошла непредвиденная ошибка.",
+        Code = ((int)HttpStatusCode.InternalServerError).ToString(),
     };
     
     private readonly RequestDelegate _next;
     
     /// <summary>
-    /// Инициализирует экземпляр <see cref="ExceptionHandlingMiddleware"/>.
+    /// Инициализирует экземпляр класса <see cref="ExceptionHandlingMiddleware"/>.
     /// </summary>
     /// <param name="next">Делегат запроса.</param>
     /// <exception cref="ArgumentNullException">Выбрасывает исключение если параметр next равен null.</exception>
@@ -48,7 +49,7 @@ public class ExceptionHandlingMiddleware
         catch (Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = GetStatusCode(exception);
+            context.Response.StatusCode = (int)GetStatusCode(exception);
             var apiError = CreateApiErrorByEnvironment(exception, context, environment);
             await context.Response.WriteAsync(Serialize(apiError));
         }
@@ -56,57 +57,46 @@ public class ExceptionHandlingMiddleware
 
     private static string Serialize(ApiError apiError)
     {
-        return JsonSerializer.Serialize(apiError, JsonSerializerOptions);
+        return JsonConvert.SerializeObject(apiError, JsonSerializerSettings);
     }
     
-    private static int GetStatusCode(Exception exception)
+    private static HttpStatusCode GetStatusCode(Exception exception)
     {
         var statusCode = exception switch
         {
-            EntityNotFoundException => HttpStatusCode.NotFound,
-            IncorrectCredentialsException => HttpStatusCode.Unauthorized,
+            ApiException apiException => apiException.StatusCode,
+            ValidationException => HttpStatusCode.BadRequest,
             _ => HttpStatusCode.InternalServerError,
         };
-        return (int)statusCode;
+        return statusCode;
     }
     
     private static ApiError CreateApiErrorByEnvironment(Exception exception, HttpContext context, IHostEnvironment environment)
     {
-        if (environment.IsDevelopment())
-        {
-            return new ApiError()
-            {
-                Message = exception.Message,
-                Code = ((int)(HttpStatusCode.InternalServerError)).ToString(),
-                Description = exception.StackTrace,
-                TraceId = context.TraceIdentifier
-            };
-        }
-        return CreateApiError(exception, context);
+        var apiError = environment.IsDevelopment()
+            ? CreateDevelopmentApiError(exception) 
+            : CreateProductionApiError(exception);
+        apiError.TraceId = context.TraceIdentifier;
+        return apiError;
     }
 
-    private static ApiError CreateApiError(Exception exception, HttpContext context)
+    private static ApiError CreateDevelopmentApiError(Exception exception)
+    {
+        return new ApiError
+        {
+            Message = exception.Message,
+            Code = ((int)HttpStatusCode.InternalServerError).ToString(),
+            Description = exception.StackTrace
+        };
+    }
+
+    private static ApiError CreateProductionApiError(Exception exception)
     {
         return exception switch
         {
-            EntityNotFoundException e => new ApiError()
-            {
-                Message = e.Message,
-                Code = ((int)HttpStatusCode.NotFound).ToString(),
-                TraceId = context.TraceIdentifier
-            },
-            IncorrectCredentialsException => new ApiError()
-            {
-                Message = "Неверное имя пользователя или пароль",
-                Code = ((int)HttpStatusCode.Unauthorized).ToString(),
-                TraceId = context.TraceIdentifier
-            },
-            _ => new ApiError()
-            {
-                Message = "Произошла непредвиденая ошибка.",
-                Code = ((int)HttpStatusCode.InternalServerError).ToString(),
-                TraceId = context.TraceIdentifier
-            }
+            ApiException ex => ex.ToApiError(),
+            ValidationException ex => ex.ToValidationApiError(),
+            _ => DefaultApiError
         };
     }
 }

@@ -1,4 +1,4 @@
-using System;
+using ClassifiedsApi.AppServices.Exceptions.Common;
 using MongoDB.Bson;
 
 namespace ClassifiedsApi.DataAccess.Helpers;
@@ -11,7 +11,7 @@ public static class MongoDbHelper
         {
             return objectId;
         }
-        throw new ArgumentException("Неверный формат id.");
+        throw new InvalidObjectIdFormatException();
     }
 
     public static string ParseStringFromObjectId(ObjectId id)

@@ -26,9 +26,9 @@ public class FileService : IFileService
     }
     
     /// <inheritdoc/>
-    public Task<FileInfo> GetFileInfoAsync(string id, CancellationToken token)
+    public Task<FileInfo> GetInfoAsync(string id, CancellationToken token)
     {
-        return _repository.GetFileInfoAsync(id, token);
+        return _repository.GetInfoAsync(id, token);
     }
     
     /// <inheritdoc/>

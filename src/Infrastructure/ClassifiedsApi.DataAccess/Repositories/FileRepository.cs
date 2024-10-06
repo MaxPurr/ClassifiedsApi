@@ -34,7 +34,7 @@ public class FileRepository : IFileRepository
     }
     
     /// <inheritdoc/>
-    public async Task<FileInfo> GetFileInfoAsync(string id, CancellationToken token)
+    public async Task<FileInfo> GetInfoAsync(string id, CancellationToken token)
     {
         var objectId = MongoDbHelper.ParseObjectIdFromString(id);
         var fileInfo = await _repository.GetInfoByIdAsync(objectId, token);
