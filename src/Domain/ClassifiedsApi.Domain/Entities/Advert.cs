@@ -45,6 +45,11 @@ public class Advert : BaseEntity
     public Category Category { get; set; } = null!;
 
     /// <summary>
+    /// Характеристики объявления.
+    /// </summary>
+    public ICollection<Characteristic> Characteristics { get; set; } = null!;
+
+    /// <summary>
     /// Коментарии.
     /// </summary>
     public ICollection<Comment> Comments { get; set; } = null!;

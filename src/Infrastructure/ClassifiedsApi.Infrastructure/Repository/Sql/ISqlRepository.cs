@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -39,28 +40,44 @@ public interface ISqlRepository<TEntity, TContext>
     Task<TEntity?> GetByIdAsync(Guid id, CancellationToken token);
     
     /// <summary>
+    /// Метод для получения первой сущности, удовлетворяющей условию.
+    /// </summary>
+    /// <param name="predicate">Условие.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Сущность если найдена, иначе null.</returns>
+    Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token);
+    
+    /// <summary>
     /// Метод для добавления новой сущности в репозиторий.
     /// </summary>
-    /// <param name="model">Сущность.</param>
+    /// <param name="entity">Сущность.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
-    Task AddAsync(TEntity model, CancellationToken token);
+    Task AddAsync(TEntity entity, CancellationToken token);
     
     /// <summary>
     /// Метод для обновления сущности.
     /// </summary>
-    /// <param name="model">Обновленная сущность.</param>
+    /// <param name="entity">Обновленная сущность.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
-    Task UpdateAsync(TEntity model, CancellationToken token);
+    Task UpdateAsync(TEntity entity, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для удаления первой сущности, удовлетворяющей условию.
+    /// </summary>
+    /// <param name="predicate">Условие.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns><code data-dev-comment-type="langword">true</code> если сущность найдена и удалена, иначе <code data-dev-comment-type="langword">false</code>.</returns>
+    Task<bool> DeleteFirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token);
     
     /// <summary>
     /// Метод для удаления сущности.
     /// </summary>
     /// <param name="id">Идентификатор <see cref="Guid"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
-    /// <returns></returns>
-    Task<bool> DeleteAsync(Guid id, CancellationToken token);
+    /// <returns><code data-dev-comment-type="langword">true</code> если сущность найдена и удалена, иначе <code data-dev-comment-type="langword">false</code>.</returns>
+    Task<bool> DeleteByIdAsync(Guid id, CancellationToken token);
     
     /// <summary>
     /// Метод для проверки существования сущности в репозитории.

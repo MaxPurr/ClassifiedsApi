@@ -1,3 +1,5 @@
+using ClassifiedsApi.Contracts.Contexts.Characteristics;
+
 namespace ClassifiedsApi.Contracts.Contexts.Adverts;
 
 /// <summary>
@@ -5,6 +7,11 @@ namespace ClassifiedsApi.Contracts.Contexts.Adverts;
 /// </summary>
 public class AdvertInfo
 {
+    /// <summary>
+    /// Идентификатор.
+    /// </summary>
+    public Guid Id { get; set; }
+    
     /// <summary>
     /// Название.
     /// </summary>
@@ -14,6 +21,11 @@ public class AdvertInfo
     /// Описание.
     /// </summary>
     public string Description { get; set; } = "";
+
+    /// <summary>
+    /// Характеристики.
+    /// </summary>
+    public ICollection<CharacteristicInfo> Characteristics { get; set; } = null!;
     
     /// <summary>
     /// Цена.
@@ -23,5 +35,15 @@ public class AdvertInfo
     /// <summary>
     /// Идентификаторы фотографий.
     /// </summary>
-    public ICollection<String> ImageIds { get; set; } = null!;
+    public ICollection<string> ImageIds { get; set; } = null!;
+    
+    /// <summary>
+    /// Идентификатор категории.
+    /// </summary>
+    public Guid CategoryId { get; set; }
+    
+    /// <summary>
+    /// Идентификатор пользователя.
+    /// </summary>
+    public Guid UserId { get; set; }
 }

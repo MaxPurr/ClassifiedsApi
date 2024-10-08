@@ -140,6 +140,28 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Characteristics",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AdvertId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Characteristics", x => new { x.Id, x.AdvertId });
+                    table.UniqueConstraint("AK_Characteristics_Name_AdvertId", x => new { x.Name, x.AdvertId });
+                    table.ForeignKey(
+                        name: "FK_Characteristics_Adverts_AdvertId",
+                        column: x => x.AdvertId,
+                        principalTable: "Adverts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
@@ -220,6 +242,11 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Characteristics_AdvertId",
+                table: "Characteristics",
+                column: "AdvertId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_AdvertId",
                 table: "Comments",
                 column: "AdvertId");
@@ -260,6 +287,9 @@ namespace ClassifiedsApi.DbMigrator.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AdvertPhoto");
+
+            migrationBuilder.DropTable(
+                name: "Characteristics");
 
             migrationBuilder.DropTable(
                 name: "Comments");

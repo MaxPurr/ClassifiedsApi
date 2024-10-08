@@ -6,6 +6,8 @@ namespace ClassifiedsApi.AppServices.Common.Validators;
 /// <summary>
 /// Валидатор модели поиска строки в тексте <see cref="TextFilter"/>.
 /// </summary>
+
+[IgnoreAutomaticRegistration]
 public class TextFilterValidator : AbstractValidator<TextFilter>
 {
     /// <summary>

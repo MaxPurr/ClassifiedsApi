@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -39,37 +40,55 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
     }
     
     /// <inheritdoc />
-    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken token)
+    public Task<TEntity?> GetByIdAsync(Guid id, CancellationToken token)
     {
-        return await GetByPredicate(entity => entity.Id == id)
-            .FirstOrDefaultAsync(token);
+        return FirstOrDefaultAsync(entity => entity.Id == id, token);
+    }
+    
+    /// <inheritdoc />
+    public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token)
+    {
+        return _dbSet.FirstOrDefaultAsync(predicate, token);
     }
 
     /// <inheritdoc />
-    public async Task AddAsync(TEntity model, CancellationToken token)
+    public async Task AddAsync(TEntity entity, CancellationToken token)
     {
-        await _dbSet.AddAsync(model, token);
+        await _dbSet.AddAsync(entity, token);
         await _dbContext.SaveChangesAsync(token);
     }
     
     /// <inheritdoc />
-    public async Task UpdateAsync(TEntity model, CancellationToken token)
+    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken token)
     {
-        _dbSet.Update(model);
+        await _dbSet.AddRangeAsync(entities, token);
         await _dbContext.SaveChangesAsync(token);
     }
 
     /// <inheritdoc />
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken token)
+    public async Task UpdateAsync(TEntity entity, CancellationToken token)
     {
-        var entity = await GetByIdAsync(id, token);
+        _dbSet.Update(entity);
+        await _dbContext.SaveChangesAsync(token);
+    }
+    
+    /// <inheritdoc />
+    public async Task<bool> DeleteFirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token)
+    {
+        var entity = await FirstOrDefaultAsync(predicate, token);
         if (entity == null)
         {
             return false;
         }
         _dbSet.Remove(entity);
         await _dbContext.SaveChangesAsync(token);
-        return true;
+        return true;;
+    }
+
+    /// <inheritdoc />
+    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token)
+    {
+        return DeleteFirstAsync(entity => entity.Id == id, token);
     }
 
     /// <inheritdoc />

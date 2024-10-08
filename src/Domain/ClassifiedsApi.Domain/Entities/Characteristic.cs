@@ -4,15 +4,10 @@ using ClassifiedsApi.Domain.Base;
 namespace ClassifiedsApi.Domain.Entities;
 
 /// <summary>
-/// Модель фотографии объявления.
+/// Модель характеристики объявления.
 /// </summary>
-public class AdvertImage : BaseEntity
+public class Characteristic : BaseEntity
 {
-    /// <summary>
-    /// Идентификатор фотографии.
-    /// </summary>
-    public string ImageId { get; set; } = "";
-    
     /// <summary>
     /// Идентификатор объявления.
     /// </summary>
@@ -22,4 +17,14 @@ public class AdvertImage : BaseEntity
     /// Объявление.
     /// </summary>
     public Advert Advert { get; set; } = null!;
+
+    /// <summary>
+    /// Название.
+    /// </summary>
+    public string Name { get; set; } = "";
+    
+    /// <summary>
+    /// Значение.
+    /// </summary>
+    public string Value { get; set; } = "";
 }

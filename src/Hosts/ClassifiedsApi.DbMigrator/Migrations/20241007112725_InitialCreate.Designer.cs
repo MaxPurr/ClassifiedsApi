@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClassifiedsApi.DbMigrator.Migrations
 {
     [DbContext(typeof(MigrationDbContext))]
-    [Migration("20241002120116_InitialCreate")]
+    [Migration("20241007112725_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -107,6 +107,36 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("Categories", (string)null);
+                });
+
+            modelBuilder.Entity("ClassifiedsApi.Domain.Entities.Characteristic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AdvertId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id", "AdvertId");
+
+                    b.HasAlternateKey("Name", "AdvertId");
+
+                    b.HasIndex("AdvertId");
+
+                    b.ToTable("Characteristics", (string)null);
                 });
 
             modelBuilder.Entity("ClassifiedsApi.Domain.Entities.Comment", b =>
@@ -300,6 +330,17 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.Navigation("ParentCategory");
                 });
 
+            modelBuilder.Entity("ClassifiedsApi.Domain.Entities.Characteristic", b =>
+                {
+                    b.HasOne("ClassifiedsApi.Domain.Entities.Advert", "Advert")
+                        .WithMany("Characteristics")
+                        .HasForeignKey("AdvertId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advert");
+                });
+
             modelBuilder.Entity("ClassifiedsApi.Domain.Entities.Comment", b =>
                 {
                     b.HasOne("ClassifiedsApi.Domain.Entities.Advert", "Advert")
@@ -366,6 +407,8 @@ namespace ClassifiedsApi.DbMigrator.Migrations
 
             modelBuilder.Entity("ClassifiedsApi.Domain.Entities.Advert", b =>
                 {
+                    b.Navigation("Characteristics");
+
                     b.Navigation("Comments");
 
                     b.Navigation("Images");

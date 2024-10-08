@@ -93,7 +93,7 @@ public class CategoryRepository : ICategoryRepository
     /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken token)
     {
-        var success = await _repository.DeleteAsync(id, token);
+        var success = await _repository.DeleteByIdAsync(id, token);
         if (!success)
         {
             throw new CategoryNotFoundException();

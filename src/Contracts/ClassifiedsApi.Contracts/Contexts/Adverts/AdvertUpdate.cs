@@ -1,29 +1,24 @@
 namespace ClassifiedsApi.Contracts.Contexts.Adverts;
 
 /// <summary>
-/// Модель создания объявления.
+/// Модель обновления объявления.
 /// </summary>
-public class AdvertCreate
+public class AdvertUpdate
 {
     /// <summary>
     /// Название.
     /// </summary>
-    public string? Title { get; set; } = "";
+    public string? Title { get; set; }
     
     /// <summary>
     /// Описание.
     /// </summary>
-    public string? Description { get; set; } = "";
+    public string? Description { get; set; }
     
     /// <summary>
     /// Цена.
     /// </summary>
     public decimal? Price { get; set; }
-
-    /// <summary>
-    /// Характеристики.
-    /// </summary>
-    public Dictionary<string, string> Characteristics { get; set; } = new();
     
     /// <summary>
     /// Идентификатор категории.

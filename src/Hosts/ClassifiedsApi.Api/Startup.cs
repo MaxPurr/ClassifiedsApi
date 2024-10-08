@@ -25,6 +25,7 @@ public class Startup {
     {
         services.AddConfiguredAuthentication(_configuration);
         services.AddAuthorization();
+        services.AddHttpContextAccessor();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddConfiguredSwaggerGen(_configuration);

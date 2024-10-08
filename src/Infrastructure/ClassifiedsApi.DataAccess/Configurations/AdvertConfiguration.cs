@@ -13,6 +13,11 @@ public class AdvertConfiguration :  IEntityTypeConfiguration<Advert>
         builder.Property(advert => advert.Title).HasMaxLength(255).IsRequired();
         builder.Property(advert => advert.Description).HasMaxLength(1000).IsRequired();
         builder.Property(advert => advert.Price).HasColumnType("decimal(18,2)").IsRequired();
+        builder.HasMany(advert => advert.Characteristics)
+            .WithOne(characteristic => characteristic.Advert)
+            .HasForeignKey(characteristic => characteristic.AdvertId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(advert => advert.Images)
             .WithOne(advertPhoto => advertPhoto.Advert)
             .HasForeignKey(advertPhoto => advertPhoto.AdvertId)

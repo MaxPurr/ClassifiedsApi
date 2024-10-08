@@ -1,11 +1,17 @@
 using System;
+using System.Reflection;
 using AutoMapper;
+using ClassifiedsApi.AppServices.Common.Validators;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
+using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
+using ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 using ClassifiedsApi.AppServices.Contexts.Categories.Builders;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Categories.Services;
 using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
+using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
+using ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
 using ClassifiedsApi.AppServices.Contexts.Files.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
 using ClassifiedsApi.ComponentRegistrar.MapProfiles;
@@ -28,16 +34,22 @@ public static class ComponentRegistrar
         services.AddSingleton<IMapper>(provider => new Mapper(GetMapperConfiguration(provider)));
 
         services.AddScoped<ICategorySpecificationBuilder, CategorySpecificationBuilder>();
-        services.AddValidatorsFromAssemblyContaining<CategoryCreateValidator>();
+        services.AddValidatorsFromAssemblyContaining<CategoryCreateValidator>(filter: filter =>
+            filter.ValidatorType.GetCustomAttribute<IgnoreAutomaticRegistrationAttribute>() == null
+        );
         
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IAdvertRepository, AdvertRepository>();
+        services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
         
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IAdvertService, AdvertService>();
+        services.AddScoped<ICharacteristicService, CharacteristicService>();
         
         return services;
     }
@@ -50,6 +62,8 @@ public static class ComponentRegistrar
             cfg.AddProfile<FileProfile>();
             cfg.AddProfile(new AccountProfile(timeProvider));
             cfg.AddProfile(new CategoryProfile(timeProvider));
+            cfg.AddProfile(new AdvertProfile(timeProvider));
+            cfg.AddProfile(new CharacteristicProfile(timeProvider));
         });
         configuration.AssertConfigurationIsValid();
         return configuration;

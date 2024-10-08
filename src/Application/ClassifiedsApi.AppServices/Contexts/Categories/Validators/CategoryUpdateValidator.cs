@@ -14,6 +14,7 @@ public class CategoryUpdateValidator : AbstractValidator<CategoryUpdate>
     public CategoryUpdateValidator()
     {
         RuleFor(x => x.Name)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MinimumLength(3)
             .MaximumLength(255);

@@ -73,7 +73,7 @@ public class ExceptionHandlingMiddleware
     
     private static ApiError CreateApiErrorByEnvironment(Exception exception, HttpContext context, IHostEnvironment environment)
     {
-        var apiError = environment.IsDevelopment()
+        var apiError = environment.IsDevelopment() && false
             ? CreateDevelopmentApiError(exception) 
             : CreateProductionApiError(exception);
         apiError.TraceId = context.TraceIdentifier;

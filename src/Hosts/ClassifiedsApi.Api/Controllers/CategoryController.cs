@@ -36,7 +36,7 @@ public class CategoryController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Идентификатор новой категории.</returns>
     [HttpPost]
-    [Authorize(Roles = "admin")]
+    // [Authorize(Roles = "admin")]
     [ProducesResponseType(typeof(Guid), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
