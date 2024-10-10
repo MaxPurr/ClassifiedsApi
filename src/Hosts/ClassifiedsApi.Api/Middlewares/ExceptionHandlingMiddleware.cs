@@ -25,7 +25,7 @@ public class ExceptionHandlingMiddleware
 
     private static readonly ApiError DefaultApiError = new ApiError{
         Message = "Произошла непредвиденная ошибка.",
-        Code = ((int)HttpStatusCode.InternalServerError).ToString(),
+        Code = StatusCodes.Status500InternalServerError.ToString(),
     };
     
     private readonly RequestDelegate _next;
@@ -73,7 +73,7 @@ public class ExceptionHandlingMiddleware
     
     private static ApiError CreateApiErrorByEnvironment(Exception exception, HttpContext context, IHostEnvironment environment)
     {
-        var apiError = environment.IsDevelopment()
+        var apiError = environment.IsDevelopment() && false
             ? CreateDevelopmentApiError(exception) 
             : CreateProductionApiError(exception);
         apiError.TraceId = context.TraceIdentifier;
@@ -85,7 +85,7 @@ public class ExceptionHandlingMiddleware
         return new ApiError
         {
             Message = exception.Message,
-            Code = ((int)HttpStatusCode.InternalServerError).ToString(),
+            Code = StatusCodes.Status500InternalServerError.ToString(),
             Description = exception.StackTrace
         };
     }

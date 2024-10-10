@@ -20,6 +20,7 @@ public class CategoryCreateValidator : AbstractValidator<CategoryCreate>
             .NotEmpty()
             .MinimumLength(3)
             .MaximumLength(255);
+        
         When(categoryCreate => categoryCreate.ParentId != null, () =>
         {
             RuleFor(categoryCreate => categoryCreate.ParentId)

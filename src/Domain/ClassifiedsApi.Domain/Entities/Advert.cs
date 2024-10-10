@@ -60,6 +60,11 @@ public class Advert : BaseEntity
     public ICollection<AdvertImage> Images { get; set; } = null!;
     
     /// <summary>
+    /// Неактивное объявление.
+    /// </summary>
+    public bool Disabled { get; set; }
+    
+    /// <summary>
     /// Пользователи, которым понравилось объявление.
     /// </summary>
     public ICollection<User> LikedUsers { get; set; } = null!;

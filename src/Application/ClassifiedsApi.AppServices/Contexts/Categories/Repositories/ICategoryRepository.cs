@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Specifications;
-using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Categories;
 
 namespace ClassifiedsApi.AppServices.Contexts.Categories.Repositories;

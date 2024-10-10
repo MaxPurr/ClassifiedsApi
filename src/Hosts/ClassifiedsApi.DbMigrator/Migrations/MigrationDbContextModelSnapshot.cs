@@ -39,6 +39,9 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 

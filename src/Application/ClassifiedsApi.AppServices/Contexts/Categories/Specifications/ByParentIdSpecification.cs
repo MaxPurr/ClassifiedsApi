@@ -10,18 +10,15 @@ namespace ClassifiedsApi.AppServices.Contexts.Categories.Specifications;
 /// </summary>
 public class ByParentIdSpecification : Specification<CategoryInfo>
 {
-    private readonly Guid? _parentId;
-    
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="ByParentIdSpecification"/>.
     /// </summary>
     /// <param name="parentId">Идентификатор родительской категори <see cref="Guid"/>.</param>
     public ByParentIdSpecification(Guid? parentId)
     {
-        _parentId = parentId;
+        PredicateExpression = category => category.ParentId == parentId;
     }
     
     /// <inheritdoc />
-    public override Expression<Func<CategoryInfo, bool>> PredicateExpression =>
-        category => category.ParentId == _parentId;
+    public override Expression<Func<CategoryInfo, bool>> PredicateExpression { get; }
 }

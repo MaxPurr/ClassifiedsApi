@@ -1,11 +1,9 @@
-using ClassifiedsApi.Contracts.Contexts.Characteristics;
-
 namespace ClassifiedsApi.Contracts.Contexts.Adverts;
 
 /// <summary>
-/// Модель информации об объявлении.
+/// Модель краткой информации об объявлении.
 /// </summary>
-public class AdvertInfo
+public class ShortAdvertInfo
 {
     /// <summary>
     /// Идентификатор.
@@ -22,11 +20,6 @@ public class AdvertInfo
     /// </summary>
     public string Description { get; set; } = "";
 
-    /// <summary>
-    /// Характеристики.
-    /// </summary>
-    public ICollection<CharacteristicInfo> Characteristics { get; set; } = null!;
-    
     /// <summary>
     /// Цена.
     /// </summary>

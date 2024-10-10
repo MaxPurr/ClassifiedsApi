@@ -29,6 +29,7 @@ public class AdvertUpdateRequestValidator : AdvertRequestValidator<AdvertRequest
         return advertUpdate.Title != null 
             || advertUpdate.Description != null
             || advertUpdate.CategoryId != null
-            || advertUpdate.Price != null;
+            || advertUpdate.Price != null
+            || advertUpdate.Disabled != null;
     }
 }

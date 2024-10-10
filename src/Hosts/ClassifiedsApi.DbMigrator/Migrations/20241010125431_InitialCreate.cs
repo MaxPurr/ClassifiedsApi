@@ -75,6 +75,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Disabled = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

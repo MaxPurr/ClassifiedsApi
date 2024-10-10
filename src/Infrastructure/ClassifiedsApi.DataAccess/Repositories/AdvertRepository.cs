@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Advert;
+using ClassifiedsApi.AppServices.Specifications;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Users;
 using ClassifiedsApi.DataAccess.DbContexts;
@@ -54,6 +58,42 @@ public class AdvertRepository : IAdvertRepository
         }
         return advert;
     }
+    
+    private static Expression<Func<ShortAdvertInfo, object?>> GetOrderByExpression(AdvertsOrderBy orderBy)
+    {
+        return orderBy switch
+        {
+            AdvertsOrderBy.Title => advert => advert.Title,
+            AdvertsOrderBy.CreatedAt => advert => advert.CreatedAt,
+            _ => advert => advert.Id,
+        };
+    }
+    
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<ShortAdvertInfo>> GetBySpecificationWithPaginationAsync(
+        ISpecification<ShortAdvertInfo> specification, 
+        int? skip, 
+        int take, 
+        AdvertsOrder order,
+        CancellationToken token)
+    {
+        var query = _repository
+            .GetAll()
+            .Include(advert => advert.Images)
+            .ProjectTo<ShortAdvertInfo>(_mapper.ConfigurationProvider)
+            .Where(specification.PredicateExpression);
+        var orderByExpression = GetOrderByExpression(order.By);
+        query = order.Descending 
+            ? query.OrderByDescending(orderByExpression)
+            : query.OrderBy(orderByExpression);
+        if (skip.HasValue)
+        {
+            query = query.Skip(skip.Value);
+        }
+        return await query
+            .Take(take)
+            .ToArrayAsync(token);
+    }
 
     /// <inheritdoc />
     public async Task<AdvertInfo> UpdateAsync(Guid id, AdvertUpdate advertUpdate, CancellationToken token)
@@ -78,6 +118,10 @@ public class AdvertRepository : IAdvertRepository
         if (advertUpdate.CategoryId.HasValue)
         {
             advert.CategoryId = advertUpdate.CategoryId.Value;
+        }
+        if (advertUpdate.Disabled.HasValue)
+        {
+            advert.Disabled = advertUpdate.Disabled.Value;
         }
         await _repository.UpdateAsync(advert, token);
         return _mapper.Map<AdvertInfo>(advert);

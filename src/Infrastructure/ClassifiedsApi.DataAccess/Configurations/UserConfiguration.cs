@@ -27,7 +27,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(advert => advert.User)
             .HasForeignKey(advert => advert.UserId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
         builder.HasMany(user => user.LikedAdverts)
             .WithMany(advert => advert.LikedUsers)
             .UsingEntity<UserFavoriteAdvert>(

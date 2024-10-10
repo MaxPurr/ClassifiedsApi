@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.Api.Controllers.Base;
 using ClassifiedsApi.AppServices.Contexts.Categories.Services;
+using ClassifiedsApi.Contracts.Common.Errors;
 using ClassifiedsApi.Contracts.Contexts.Categories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +19,7 @@ namespace ClassifiedsApi.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-public class CategoryController : ControllerBase
+public class CategoryController : BaseAdminController
 {
     private readonly ICategoryService _service;
     
@@ -39,6 +41,7 @@ public class CategoryController : ControllerBase
     [HttpPost]
     // [Authorize(Roles = "admin")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateAsync([FromBody] CategoryCreate categoryCreate, CancellationToken token)
@@ -55,7 +58,7 @@ public class CategoryController : ControllerBase
     /// <returns>Модель информации о категории.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(CategoryInfo), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetInfoAsync([FromRoute] Guid id, CancellationToken token)
     {
         var categoryInfo = await _service.GetInfoAsync(id, token);
@@ -70,6 +73,7 @@ public class CategoryController : ControllerBase
     /// <returns>Список категорий.</returns>
     [HttpPost("search")]
     [ProducesResponseType(typeof(IReadOnlyCollection<CategoryInfo>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SearchAsync([FromBody] CategoriesSearch search, CancellationToken token)
     {
         var categories = await _service.SearchAsync(search, token);
@@ -84,10 +88,10 @@ public class CategoryController : ControllerBase
     /// <returns></returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "admin")]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken token)
     {
         await _service.DeleteAsync(id, token);
@@ -102,14 +106,16 @@ public class CategoryController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Модель обновленной информации о категории.</returns>
     [HttpPatch("{id:guid}")]
-    [Authorize(Roles = "admin")]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    // [Authorize(Roles = "admin")]
+    [ProducesResponseType(typeof(CategoryInfo), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] CategoryUpdate categoryUpdate, CancellationToken token)
     {
-        var categoryInfo = await _service.UpdateAsync(id, categoryUpdate, token);
+        var updateRequest = GetCategoryRequest(id, categoryUpdate);
+        var categoryInfo = await _service.UpdateAsync(updateRequest, token);
         return Ok(categoryInfo);
     }
 }
