@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Repositories;
@@ -51,5 +52,15 @@ public class AdvertImageService : IAdvertImageService
         await _advertRequestValidator.ValidateAndThrowAsync(imageDeleteRequest, token);
         await _advertImageRepository.DeleteAsync(imageDeleteRequest.AdvertId, imageDeleteRequest.ImageId, token);
         await _fileService.DeleteAsync(imageDeleteRequest.ImageId, token);
+    }
+    
+    /// <inheritdoc />
+    public async Task DeleteAllAsync(Guid advertId, CancellationToken token)
+    {
+        var ids = await _advertImageRepository.GetAllAsync(advertId, token);
+        foreach (var id in ids)
+        {
+            await _fileService.DeleteAsync(id, token);
+        }
     }
 }

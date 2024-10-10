@@ -9,7 +9,6 @@ using ClassifiedsApi.Contracts.Contexts.Characteristics;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApi.DataAccess.Repositories;
 

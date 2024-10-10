@@ -23,7 +23,7 @@ public class AdvertConfiguration :  IEntityTypeConfiguration<Advert>
             .WithOne(advertPhoto => advertPhoto.Advert)
             .HasForeignKey(advertPhoto => advertPhoto.AdvertId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(advert => advert.Comments)
             .WithOne(comment => comment.Advert)
             .HasForeignKey(comment => comment.AdvertId)

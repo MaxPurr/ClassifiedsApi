@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Repositories;
@@ -6,6 +8,7 @@ using ClassifiedsApi.AppServices.Exceptions.AdvertImages;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApi.DataAccess.Repositories;
 
@@ -45,5 +48,15 @@ public class AdvertImageRepository : IAdvertImageRepository
         {
             throw new AdvertImageNotFoundException();
         }
+    }
+    
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<string>> GetAllAsync(Guid advertId, CancellationToken token)
+    {
+        var ids = await _repository
+            .GetByPredicate(advertImage => advertImage.AdvertId == advertId)
+            .Select(advertImage => advertImage.ImageId)
+            .ToArrayAsync(token);
+        return ids;
     }
 }
