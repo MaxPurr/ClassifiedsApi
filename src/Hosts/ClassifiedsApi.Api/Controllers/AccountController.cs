@@ -53,7 +53,7 @@ public class AccountController : ControllerBase
     /// <returns>Токен доступа.</returns>
     [HttpPost("token")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> LoginAsync([FromBody] AccountVerify accountVerify, CancellationToken token)
     {
         var accountInfo = await _accountService.GetInfoAsync(accountVerify, token);

@@ -13,5 +13,5 @@ public abstract class BasePagination
     /// <summary>
     /// Количество элементов для получения.
     /// </summary>
-    public int Take { get; set; }
+    public int? Take { get; set; }
 }

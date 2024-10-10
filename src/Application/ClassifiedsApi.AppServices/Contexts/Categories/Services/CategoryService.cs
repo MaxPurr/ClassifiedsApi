@@ -14,8 +14,9 @@ public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _repository;
     private readonly ICategorySpecificationBuilder _specificationBuilder;
+    
     private readonly IValidator<CategoryCreate> _categoryCreateValidator;
-    private readonly IValidator<CategoryUpdate> _categoryUpdateValidator;
+    private readonly IValidator<CategoryRequest<CategoryUpdate>> _categoryUpdateRequestValidator;
     private readonly IValidator<CategoriesSearch> _categoriesSearchValidator;
 
     /// <summary>
@@ -24,19 +25,19 @@ public class CategoryService : ICategoryService
     /// <param name="repository">Репозиторий файлов <see cref="ICategoryRepository"/>.</param>
     /// <param name="specificationBuilder">Строитель спецификаций для категорий <see cref="ICategorySpecificationBuilder"/>.</param>
     /// <param name="categoryCreateValidator">Валидатор модели создания категории.</param>
-    /// <param name="categoryUpdateValidator">Валидатор модели обновления категории.</param>
+    /// <param name="categoryUpdateRequestValidator">Валидатор модели запроса на обновления категории.</param>
     /// <param name="categoriesSearchValidator">Валидатор модели поиска категорий.</param>
     public CategoryService(
         ICategoryRepository repository, 
         ICategorySpecificationBuilder specificationBuilder, 
         IValidator<CategoryCreate> categoryCreateValidator, 
-        IValidator<CategoryUpdate> categoryUpdateValidator, 
+        IValidator<CategoryRequest<CategoryUpdate>> categoryUpdateRequestValidator, 
         IValidator<CategoriesSearch> categoriesSearchValidator)
     {
         _repository = repository;
         _specificationBuilder = specificationBuilder;
         _categoryCreateValidator = categoryCreateValidator;
-        _categoryUpdateValidator = categoryUpdateValidator;
+        _categoryUpdateRequestValidator = categoryUpdateRequestValidator;
         _categoriesSearchValidator = categoriesSearchValidator;
     }
     
@@ -58,7 +59,7 @@ public class CategoryService : ICategoryService
     {
         _categoriesSearchValidator.ValidateAndThrow(search);
         var specification = _specificationBuilder.Build(search);
-        return _repository.GetBySpecificationWithPaginationAsync(specification, search.Skip, search.Take, search.Order, token);
+        return _repository.GetBySpecificationWithPaginationAsync(specification, search.Skip, search.Take.GetValueOrDefault(0), search.Order!, token);
     }
 
     /// <inheritdoc />
@@ -68,10 +69,11 @@ public class CategoryService : ICategoryService
     }
     
     /// <inheritdoc />
-    public Task<CategoryInfo> UpdateAsync(Guid id, CategoryUpdate categoryUpdate, CancellationToken token)
+    public async Task<CategoryInfo> UpdateAsync(CategoryRequest<CategoryUpdate> updateRequest, CancellationToken token)
     {
-        _categoryUpdateValidator.ValidateAndThrow(categoryUpdate);
-        return _repository.UpdateAsync(id, categoryUpdate, token);
+        await _categoryUpdateRequestValidator.ValidateAndThrowAsync(updateRequest, token);
+        var category = await _repository.UpdateAsync(updateRequest.CategoryId, updateRequest.Model, token);
+        return category;
     }
     
     /// <inheritdoc />

@@ -25,7 +25,7 @@ public class NameFilterSpecification : Specification<CategoryInfo>
     /// <inheritdoc />
     public override Expression<Func<CategoryInfo, bool>> PredicateExpression { get; }
     
-    private Expression<Func<CategoryInfo, bool>> GetPredicateExpression(TextFilter filter)
+    private static Expression<Func<CategoryInfo, bool>> GetPredicateExpression(TextFilter filter)
     {
         var regex = filter.GetRegularExpression();
         if (filter.IgnoreCase)

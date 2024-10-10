@@ -17,6 +17,7 @@ public class AdvertProfile : Profile
             .ForMember(advert => advert.Title, map => map.MapFrom(request => request.Model.Title))
             .ForMember(advert => advert.Description, map => map.MapFrom(request => request.Model.Description))
             .ForMember(advert => advert.Price, map => map.MapFrom(request => request.Model.Price))
+            .ForMember(advert => advert.Disabled, map => map.MapFrom(_ => false))
             .ForMember(advert => advert.CategoryId, map => map.MapFrom(request => request.Model.CategoryId))
             .AfterMap((request, advert) =>
                 {
@@ -32,6 +33,9 @@ public class AdvertProfile : Profile
             );
 
         CreateMap<Advert, AdvertInfo>(MemberList.None)
+            .ForMember(info => info.ImageIds, map => map.MapFrom(advert => advert.Images.Select(advertImage => advertImage.ImageId)));
+        
+        CreateMap<Advert, ShortAdvertInfo>(MemberList.None)
             .ForMember(info => info.ImageIds, map => map.MapFrom(advert => advert.Images.Select(advertImage => advertImage.ImageId)));
     }
 }

@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.AppServices.Specifications;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Users;
 
@@ -26,6 +28,22 @@ public interface IAdvertRepository
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Модель информации об объявлении <see cref="AdvertInfo"/>.</returns>
     Task<AdvertInfo> GetByIdAsync(Guid id, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для получения объявлений по спецификации с пагинацией.
+    /// </summary>
+    /// <param name="specification">Спецификация <see cref="ISpecification"/>.</param>
+    /// <param name="skip">Количество элементов для пропуска.</param>
+    /// <param name="take">Количество элементов для получения.</param>
+    /// <param name="order">Модель сортировки объявлений <see cref="AdvertsOrder"/>.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Колекция моделей краткой информации об объявлениях.</returns>
+    Task<IReadOnlyCollection<ShortAdvertInfo>> GetBySpecificationWithPaginationAsync(
+        ISpecification<ShortAdvertInfo> specification, 
+        int? skip, 
+        int take,
+        AdvertsOrder order,
+        CancellationToken token);
 
     /// <summary>
     /// Метод для обновления объявления.

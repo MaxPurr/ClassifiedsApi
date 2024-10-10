@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -54,6 +55,16 @@ public class CategoryRepository : ICategoryRepository
         }
         return categoryInfo;
     }
+
+    private static Expression<Func<CategoryInfo, object?>> GetOrderByExpression(CategoriesOrderBy orderBy)
+    {
+        return orderBy switch
+        {
+            CategoriesOrderBy.Name => category => category.Name,
+            CategoriesOrderBy.ParentId => category => category.ParentId,
+            _ => category => category.Id,
+        };
+    }
     
     /// <inheritdoc />
     public async Task<IReadOnlyCollection<CategoryInfo>> GetBySpecificationWithPaginationAsync(
@@ -67,27 +78,17 @@ public class CategoryRepository : ICategoryRepository
             .GetAll()
             .ProjectTo<CategoryInfo>(_mapper.ConfigurationProvider)
             .Where(specification.PredicateExpression);
-        var desc = order.Descending;
-        query = order.By switch
-        {
-            CategoriesOrderBy.Id => desc 
-                ? query.OrderByDescending(c => c.Id) 
-                : query.OrderBy(c => c.Id),
-            CategoriesOrderBy.Name => desc 
-                ? query.OrderByDescending(c => c.Name) 
-                : query.OrderBy(c => c.Name),
-            CategoriesOrderBy.ParentId => desc 
-                ? query.OrderByDescending(c => c.ParentId) 
-                : query.OrderBy(c => c.ParentId),
-            _ => query
-        };
+        var orderByExpression = GetOrderByExpression(order.By);
+        query = order.Descending
+            ? query.OrderByDescending(orderByExpression) 
+            : query.OrderBy(orderByExpression);
         if (skip.HasValue)
         {
             query = query.Skip(skip.Value);
         }
         return await query
             .Take(take)
-            .ToListAsync(token);
+            .ToArrayAsync(token);
     }
 
     /// <inheritdoc />
@@ -111,6 +112,10 @@ public class CategoryRepository : ICategoryRepository
         if (categoryUpdate.Name != null)
         {
             category.Name = categoryUpdate.Name;
+        }
+        if (categoryUpdate.UpdateParentId != null)
+        {
+            category.ParentId = categoryUpdate.UpdateParentId.ParentId;
         }
         await _repository.UpdateAsync(category, token);
         return _mapper.Map<CategoryInfo>(category);

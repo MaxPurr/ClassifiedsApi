@@ -24,4 +24,9 @@ public class AdvertUpdate
     /// Идентификатор категории.
     /// </summary>
     public Guid? CategoryId { get; set; }
+    
+    /// <summary>
+    /// Неактивное объявление.
+    /// </summary>
+    public bool? Disabled { get; set; }
 }

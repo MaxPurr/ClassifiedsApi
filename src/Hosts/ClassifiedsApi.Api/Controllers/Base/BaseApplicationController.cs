@@ -1,26 +1,25 @@
 using System;
 using System.Security.Claims;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
-using ClassifiedsApi.Contracts.Contexts.Characteristics;
 using ClassifiedsApi.Contracts.Contexts.Files;
 using ClassifiedsApi.Contracts.Contexts.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClassifiedsApi.Api.Controllers;
+namespace ClassifiedsApi.Api.Controllers.Base;
 
 /// <summary>
 /// Базовый контроллер приложения.
 /// </summary>
-public abstract class ApplicationController : ControllerBase
+public abstract class BaseApplicationController : ControllerBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     
     /// <summary>
-    /// Инициализирует экземпляр класса <see cref="ApplicationController"/>.
+    /// Инициализирует экземпляр класса <see cref="BaseApplicationController"/>.
     /// </summary>
     /// <param name="httpContextAccessor">Средство доступа к HTTP-контексту.</param>
-    protected ApplicationController(IHttpContextAccessor httpContextAccessor)
+    protected BaseApplicationController(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
@@ -84,7 +83,7 @@ public abstract class ApplicationController : ControllerBase
     /// </summary>
     /// <param name="file">Файл.</param>
     /// <returns>Модель загрузки файла на сервер.</returns>
-    protected FileUpload GetFileUpload(IFormFile file)
+    protected static FileUpload GetFileUpload(IFormFile file)
     {
         return new FileUpload
         {

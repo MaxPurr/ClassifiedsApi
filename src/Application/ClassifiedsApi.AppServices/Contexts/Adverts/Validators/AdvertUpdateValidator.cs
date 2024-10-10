@@ -1,3 +1,4 @@
+using ClassifiedsApi.AppServices.Common.Validators;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
@@ -8,6 +9,8 @@ namespace ClassifiedsApi.AppServices.Contexts.Adverts.Validators;
 /// <summary>
 /// Валидатор модели обновления объявления <see cref="AdvertUpdate"/>.
 /// </summary>
+
+[IgnoreAutomaticRegistration]
 public class AdvertUpdateValidator : AbstractValidator<AdvertUpdate>
 {
     /// <summary>

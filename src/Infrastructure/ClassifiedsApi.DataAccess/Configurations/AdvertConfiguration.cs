@@ -13,6 +13,7 @@ public class AdvertConfiguration :  IEntityTypeConfiguration<Advert>
         builder.Property(advert => advert.Title).HasMaxLength(255).IsRequired();
         builder.Property(advert => advert.Description).HasMaxLength(1000).IsRequired();
         builder.Property(advert => advert.Price).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(advert => advert.Disabled).IsRequired();
         builder.HasMany(advert => advert.Characteristics)
             .WithOne(characteristic => characteristic.Advert)
             .HasForeignKey(characteristic => characteristic.AdvertId)
@@ -22,7 +23,7 @@ public class AdvertConfiguration :  IEntityTypeConfiguration<Advert>
             .WithOne(advertPhoto => advertPhoto.Advert)
             .HasForeignKey(advertPhoto => advertPhoto.AdvertId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
         builder.HasMany(advert => advert.Comments)
             .WithOne(comment => comment.Advert)
             .HasForeignKey(comment => comment.AdvertId)

@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.Api.Controllers.Base;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
+using ClassifiedsApi.Contracts.Common.Errors;
 using ClassifiedsApi.Contracts.Contexts.AdvertImages;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
@@ -20,7 +23,7 @@ namespace ClassifiedsApi.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-public class AdvertController : ApplicationController
+public class AdvertController : BaseApplicationController
 {
     private readonly IAdvertService _advertService;
     private readonly ICharacteristicService _characteristicService;
@@ -54,7 +57,7 @@ public class AdvertController : ApplicationController
     [HttpPost]
     [Authorize]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateAsync([FromBody] AdvertCreate advertCreate, CancellationToken token)
     {
@@ -71,11 +74,26 @@ public class AdvertController : ApplicationController
     /// <returns>Модель информации об объявлении.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(AdvertInfo), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetInfoAsync([FromRoute] Guid id, CancellationToken token)
     {
         var advertInfo = await _advertService.GetByIdAsync(id, token);
         return Ok(advertInfo);
+    }
+    
+    /// <summary>
+    /// Метод для поиска объявлений по заданному условию.
+    /// </summary>
+    /// <param name="search">Модель поиска объявлений.</param>
+    /// <param name="token">Токен отмены операции.</param>
+    /// <returns>Список объявлений.</returns>
+    [HttpPost("search")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<ShortAdvertInfo>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SearchAsync(AdvertsSearch search, CancellationToken token)
+    {
+        var adverts = await _advertService.SearchAsync(search, token);
+        return Ok(adverts);
     }
     
     /// <summary>
@@ -88,8 +106,8 @@ public class AdvertController : ApplicationController
     [HttpPatch("{id:guid}")]
     [Authorize]
     [ProducesResponseType(typeof(AdvertInfo), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] AdvertUpdate advertUpdate, CancellationToken token)
     {
@@ -107,7 +125,7 @@ public class AdvertController : ApplicationController
     [HttpDelete("{id:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken token)
     {
@@ -130,8 +148,7 @@ public class AdvertController : ApplicationController
     [HttpPost("{id:guid}/characteristic")]
     [Authorize]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddCharacteristicAsync(
         [FromRoute] Guid id, 
@@ -153,8 +170,8 @@ public class AdvertController : ApplicationController
     [HttpDelete("{id:guid}/characteristic/{characteristicId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteCharacteristicAsync([FromRoute] Guid id, [FromRoute] Guid characteristicId, CancellationToken token)
     {
@@ -179,8 +196,8 @@ public class AdvertController : ApplicationController
     [HttpPatch("{id:guid}/characteristic/{characteristicId:guid}")]
     [Authorize]
     [ProducesResponseType(typeof(CharacteristicInfo), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateCharacteristicAsync(
         [FromRoute] Guid id, 
@@ -209,7 +226,7 @@ public class AdvertController : ApplicationController
     [HttpPost("{id:guid}/image")]
     [Authorize]
     [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UploadImageAsync(
         [FromRoute] Guid id,
@@ -236,8 +253,8 @@ public class AdvertController : ApplicationController
     [HttpDelete("{id:guid}/image/{imageId}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteImageAsync(
         [FromRoute] Guid id,

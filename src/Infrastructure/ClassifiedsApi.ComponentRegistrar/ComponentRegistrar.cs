@@ -6,6 +6,7 @@ using ClassifiedsApi.AppServices.Contexts.Accounts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Repositories;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
+using ClassifiedsApi.AppServices.Contexts.Adverts.Builders;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 using ClassifiedsApi.AppServices.Contexts.Categories.Builders;
@@ -36,6 +37,7 @@ public static class ComponentRegistrar
         services.AddSingleton<IMapper>(provider => new Mapper(GetMapperConfiguration(provider)));
 
         services.AddScoped<ICategorySpecificationBuilder, CategorySpecificationBuilder>();
+        services.AddScoped<IAdvertSpecificationBuilder, AdvertSpecificationBuilder>();
         services.AddValidatorsFromAssemblyContaining<CategoryCreateValidator>(filter: filter =>
             filter.ValidatorType.GetCustomAttribute<IgnoreAutomaticRegistrationAttribute>() == null
         );
