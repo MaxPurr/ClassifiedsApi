@@ -1,9 +1,9 @@
-namespace ClassifiedsApi.Contracts.Common.Requests;
+namespace ClassifiedsApi.Contracts.Contexts.Adverts;
 
 /// <summary>
 /// Базовая модель пользовательского запроса объявления.
 /// </summary>
-public class UserAdvertRequest
+public class AdvertRequest
 {
     /// <summary>
     /// Идентификатор пользователя.
@@ -20,7 +20,7 @@ public class UserAdvertRequest
 /// Типизированная модель пользовательского запроса объявления.
 /// </summary>
 /// <typeparam name="TModel">Тип модели запроса.</typeparam>
-public class UserAdvertRequest<TModel> : UserAdvertRequest where TModel : class
+public class AdvertRequest<TModel> : AdvertRequest where TModel : class
 {   
     /// <summary>
     /// Модель запроса.

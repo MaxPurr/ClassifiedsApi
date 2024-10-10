@@ -8,15 +8,15 @@ public class FileUpload
     /// <summary>
     /// Название.
     /// </summary>
-    public string Name { get; set; } = "";
+    public required string Name { get; set; }
 
     /// <summary>
     /// Поток для чтения файла.
     /// </summary>
-    public Stream ReadStream { get; set; } = null!;
+    public required Stream ReadStream { get; set; }
 
     /// <summary>
     /// Тип контента.
     /// </summary>
-    public string ContentType { get; set; } = "";
+    public required string ContentType { get; set; }
 }   

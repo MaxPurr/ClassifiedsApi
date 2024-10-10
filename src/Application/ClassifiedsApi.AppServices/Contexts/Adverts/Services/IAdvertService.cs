@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ClassifiedsApi.Contracts.Common.Requests;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
+using ClassifiedsApi.Contracts.Contexts.Users;
 
 namespace ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 
@@ -33,14 +33,13 @@ public interface IAdvertService
     /// <param name="advertUpdateRequest">Модель пользовательского запроса на обновление объявления.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Модель обновленной информации об объявлении <see cref="AdvertInfo"/>.</returns>
-    Task<AdvertInfo> UpdateAsync(UserAdvertRequest<AdvertUpdate> advertUpdateRequest, CancellationToken token);
+    Task<AdvertInfo> UpdateAsync(AdvertRequest<AdvertUpdate> advertUpdateRequest, CancellationToken token);
     
     /// <summary>
     /// Метод для удаления объявления.
     /// </summary>
-    /// <param name="advertId">Идентификатор объявления.</param>
-    /// <param name="userId">Идентификатор пользователя</param>
+    /// <param name="deleteRequest">Модель пользовательского запроса на удаление объявления <see cref="AdvertDeleteRequest"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
-    Task DeleteAsync(Guid advertId, Guid userId, CancellationToken token);
+    Task DeleteAsync(AdvertDeleteRequest deleteRequest, CancellationToken token);
 }

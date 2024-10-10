@@ -7,29 +7,29 @@ using FluentValidation;
 namespace ClassifiedsApi.AppServices.Contexts.Characteristics.Validators;
 
 /// <summary>
-/// Валидатор модели пользовательского запроса на обновление характеристики объявления.
+/// Валидатор модели пользовательского запроса на обновление характеристики объявления <see cref="CharacteristicUpdateRequest"/>.
 /// </summary>
-public class CharacteristicUpdateRequestValidator : UserAdvertRequestValidator<CharacteristicUpdateRequest>
+public class CharacteristicUpdateRequestValidator : AdvertRequestValidator<CharacteristicUpdateRequest>
 {
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="CharacteristicUpdateRequestValidator"/>.
     /// </summary>
-    /// <param name="advertRepository">Репозиторий объявлений <see cref="IAdvertRepository"/>.</param>
+    /// <param name="advertRepository">Репозиторий характеристик объявлений <see cref="IAdvertRepository"/>.</param>
     /// <param name="characteristicRepository">Репозиторий характеристик объявлений <see cref="ICharacteristicRepository"/>.</param>
     public CharacteristicUpdateRequestValidator(
         IAdvertRepository advertRepository,
         ICharacteristicRepository characteristicRepository) 
         : base(advertRepository)
     {
-        RuleFor(updateRequest => updateRequest.Model)
+        RuleFor(request => request.Model)
             .Must(IsNotEmpty)
             .WithMessage("Модель обновления характеристики объявления не может быть пустой.")
-            .SetValidator(updateRequest => new CharacteristicUpdateValidator(updateRequest.AdvertId, characteristicRepository));
+            .SetValidator(request => new CharacteristicUpdateValidator(request.AdvertId, characteristicRepository));
     }
 
-    private bool IsNotEmpty(CharacteristicUpdate characteristicUpdate)
+    private static bool IsNotEmpty(CharacteristicUpdate characteristicUpdate)
     {
-        return characteristicUpdate.Name != null
-               || characteristicUpdate.Value != null;
+        return characteristicUpdate.Name != null || 
+               characteristicUpdate.Value != null;
     }
 }

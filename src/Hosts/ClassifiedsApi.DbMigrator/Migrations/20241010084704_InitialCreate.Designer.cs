@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClassifiedsApi.DbMigrator.Migrations
 {
     [DbContext(typeof(MigrationDbContext))]
-    [Migration("20241007112725_InitialCreate")]
+    [Migration("20241010084704_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -64,25 +64,17 @@ namespace ClassifiedsApi.DbMigrator.Migrations
 
             modelBuilder.Entity("ClassifiedsApi.Domain.Entities.AdvertImage", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("ImageId")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("AdvertId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ImageId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
+                    b.HasKey("ImageId", "AdvertId");
 
                     b.HasIndex("AdvertId");
 
-                    b.ToTable("AdvertPhoto", (string)null);
+                    b.ToTable("AdvertImages", (string)null);
                 });
 
             modelBuilder.Entity("ClassifiedsApi.Domain.Entities.Category", b =>
@@ -127,8 +119,8 @@ namespace ClassifiedsApi.DbMigrator.Migrations
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.HasKey("Id", "AdvertId");
 
@@ -352,7 +344,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.HasOne("ClassifiedsApi.Domain.Entities.Comment", "ParentComment")
                         .WithMany("ChildComments")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ClassifiedsApi.Domain.Entities.User", "User")
                         .WithMany()

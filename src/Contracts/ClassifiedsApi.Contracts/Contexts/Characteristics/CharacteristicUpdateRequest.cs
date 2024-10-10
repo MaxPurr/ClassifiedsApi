@@ -1,14 +1,14 @@
-using ClassifiedsApi.Contracts.Common.Requests;
+using ClassifiedsApi.Contracts.Contexts.Adverts;
 
 namespace ClassifiedsApi.Contracts.Contexts.Characteristics;
 
 /// <summary>
 /// Модель пользовательского запроса на обновление харакатеристики объявления.
 /// </summary>
-public class CharacteristicUpdateRequest : UserAdvertRequest<CharacteristicUpdate>
+public class CharacteristicUpdateRequest : AdvertRequest<CharacteristicUpdate>
 {
     /// <summary>
-    /// Идентификатор характеристики.
+    /// Идентификатор характеристики объявления.
     /// </summary>
-    public Guid CharacteristicId { get; set; }
+    public required Guid CharacteristicId { get; init; }
 }

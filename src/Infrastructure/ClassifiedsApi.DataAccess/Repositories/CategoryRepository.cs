@@ -25,7 +25,7 @@ public class CategoryRepository : ICategoryRepository
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="CategoryRepository"/>.
     /// </summary>
-    /// <param name="repository">Глупый репозиторий <see cref="ISqlRepository{TEntity, TContext}"/>.</param>
+    /// <param name="repository">Глуппый репозиторий <see cref="ISqlRepository{TEntity, TContext}"/>.</param>
     /// <param name="mapper">Маппер <see cref="IMapper"/>.</param>
     public CategoryRepository(ISqlRepository<Category, ApplicationDbContext> repository, IMapper mapper)
     {
@@ -93,7 +93,7 @@ public class CategoryRepository : ICategoryRepository
     /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken token)
     {
-        var success = await _repository.DeleteByIdAsync(id, token);
+        var success = await _repository.DeleteFirstAsync(category => category.Id == id, token);
         if (!success)
         {
             throw new CategoryNotFoundException();
@@ -103,7 +103,7 @@ public class CategoryRepository : ICategoryRepository
     /// <inheritdoc />
     public async Task<CategoryInfo> UpdateAsync(Guid id, CategoryUpdate categoryUpdate, CancellationToken token)
     {
-        var category = await _repository.GetByIdAsync(id, token);
+        var category = await _repository.FirstOrDefaultAsync(category => category.Id == id, token);
         if (category == null)
         {
             throw new CategoryNotFoundException();
@@ -119,6 +119,6 @@ public class CategoryRepository : ICategoryRepository
     /// <inheritdoc />
     public Task<bool> IsExistsAsync(Guid id, CancellationToken token)
     {
-        return _repository.IsExistAsync(id, token);
+        return _repository.IsAnyExistAsync(category => category.Id == id, token);
     }
 }

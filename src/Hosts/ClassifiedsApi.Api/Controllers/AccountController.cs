@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
 using ClassifiedsApi.Contracts.Contexts.Accounts;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedsApi.Api.Controllers;
@@ -37,11 +38,11 @@ public class AccountController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Идентификатор нового аккаунта.</returns>
     [HttpPost("register")]
-    [ProducesResponseType(typeof(Guid) ,(int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<IActionResult> RegisterAsync([FromBody] AccountRegister accountRegister, CancellationToken token)
     {
         var id = await _accountService.RegisterAsync(accountRegister, token);
-        return StatusCode((int)HttpStatusCode.Created, id);
+        return StatusCode(StatusCodes.Status201Created, id);
     }
     
     /// <summary>
@@ -51,7 +52,8 @@ public class AccountController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Токен доступа.</returns>
     [HttpPost("token")]
-    [ProducesResponseType(typeof(AccessToken) ,(int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> LoginAsync([FromBody] AccountVerify accountVerify, CancellationToken token)
     {
         var accountInfo = await _accountService.GetInfoAsync(accountVerify, token);

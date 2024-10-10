@@ -4,6 +4,8 @@ using AutoMapper;
 using ClassifiedsApi.AppServices.Common.Validators;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
+using ClassifiedsApi.AppServices.Contexts.AdvertImages.Repositories;
+using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 using ClassifiedsApi.AppServices.Contexts.Categories.Builders;
@@ -43,6 +45,7 @@ public static class ComponentRegistrar
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IAdvertRepository, AdvertRepository>();
         services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
+        services.AddScoped<IAdvertImageRepository, AdvertImageRepository>();
         
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IFileService, FileService>();
@@ -50,6 +53,7 @@ public static class ComponentRegistrar
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IAdvertService, AdvertService>();
         services.AddScoped<ICharacteristicService, CharacteristicService>();
+        services.AddScoped<IAdvertImageService, AdvertImageService>();
         
         return services;
     }

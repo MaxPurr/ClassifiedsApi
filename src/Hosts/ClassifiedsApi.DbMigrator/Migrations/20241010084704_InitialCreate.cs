@@ -120,19 +120,17 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AdvertPhoto",
+                name: "AdvertImages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ImageId = table.Column<string>(type: "text", nullable: false),
-                    AdvertId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    AdvertId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AdvertPhoto", x => x.Id);
+                    table.PrimaryKey("PK_AdvertImages", x => new { x.ImageId, x.AdvertId });
                     table.ForeignKey(
-                        name: "FK_AdvertPhoto_Adverts_AdvertId",
+                        name: "FK_AdvertImages_Adverts_AdvertId",
                         column: x => x.AdvertId,
                         principalTable: "Adverts",
                         principalColumn: "Id",
@@ -146,7 +144,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AdvertId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    Value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Value = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -185,8 +183,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                         name: "FK_Comments_Comments_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Comments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comments_Users_UserId",
                         column: x => x.UserId,
@@ -222,8 +219,8 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AdvertPhoto_AdvertId",
-                table: "AdvertPhoto",
+                name: "IX_AdvertImages_AdvertId",
+                table: "AdvertImages",
                 column: "AdvertId");
 
             migrationBuilder.CreateIndex(
@@ -286,7 +283,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AdvertPhoto");
+                name: "AdvertImages");
 
             migrationBuilder.DropTable(
                 name: "Characteristics");

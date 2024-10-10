@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Characteristics;
-using ClassifiedsApi.Contracts.Common.Requests;
+using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
@@ -31,7 +31,7 @@ public class CharacteristicRepository : ICharacteristicRepository
     }
     
     /// <inheritdoc />
-    public async Task<Guid> AddAsync(UserAdvertRequest<CharacteristicAdd> characteristicAddRequest, CancellationToken token)
+    public async Task<Guid> AddAsync(AdvertRequest<CharacteristicAdd> characteristicAddRequest, CancellationToken token)
     {
         var advertCharacteristic = _mapper.Map<Characteristic>(characteristicAddRequest);
         await _repository.AddAsync(advertCharacteristic, token);
@@ -39,11 +39,11 @@ public class CharacteristicRepository : ICharacteristicRepository
     }
     
     /// <inheritdoc />
-    public async Task DeleteAsync(CharacteristicDeleteRequest characteristicDeleteRequest, CancellationToken token)
+    public async Task DeleteAsync(Guid advertId, Guid id, CancellationToken token)
     {
         var success = await _repository.DeleteFirstAsync(characteristic => 
-            characteristic.Id == characteristicDeleteRequest.CharacteristicId &&
-            characteristic.AdvertId == characteristicDeleteRequest.AdvertId, 
+            characteristic.AdvertId == advertId &&
+            characteristic.Id == id, 
             token);
         if (!success)
         {
@@ -52,17 +52,16 @@ public class CharacteristicRepository : ICharacteristicRepository
     }
 
     /// <inheritdoc />
-    public async Task<CharacteristicInfo> UpdateAsync(CharacteristicUpdateRequest characteristicUpdateRequest, CancellationToken token)
+    public async Task<CharacteristicInfo> UpdateAsync(Guid advertId, Guid id, CharacteristicUpdate characteristicUpdate, CancellationToken token)
     {
         var characteristic = await _repository.FirstOrDefaultAsync(characteristic => 
-            characteristic.AdvertId == characteristicUpdateRequest.AdvertId && 
-            characteristic.Id == characteristicUpdateRequest.CharacteristicId,
+            characteristic.AdvertId == advertId &&
+            characteristic.Id == id, 
             token);
         if (characteristic == null)
         {
             throw new CharacteristicNotFoundException();
         }
-        var characteristicUpdate = characteristicUpdateRequest.Model;
         if (characteristicUpdate.Name != null)
         {
             characteristic.Name = characteristicUpdate.Name;
@@ -76,10 +75,11 @@ public class CharacteristicRepository : ICharacteristicRepository
     }
 
     /// <inheritdoc />
-    public Task<bool> IsExistsAsync(Guid advertId, string name, CancellationToken token)
+    public Task<bool> IsExistsAsync(Guid advertId, string characteristicName, CancellationToken token)
     {
-        return _repository
-            .GetAll()
-            .AnyAsync(characteristic => characteristic.AdvertId == advertId && characteristic.Name == name, token);
+        return _repository.IsAnyExistAsync(characteristic => 
+            characteristic.AdvertId == advertId && 
+            characteristic.Name == characteristicName, 
+            token);
     }
 }
