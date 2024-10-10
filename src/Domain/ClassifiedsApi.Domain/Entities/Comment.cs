@@ -28,6 +28,16 @@ public class Comment : BaseEntity
     /// Дочернии комментарии.
     /// </summary>
     public ICollection<Comment> ChildComments { get; set; } = null!;
+    
+    /// <summary>
+    /// Дата и время последнего обновления.
+    /// </summary>
+    public DateTime? UpdatedAt { get; set; }
+    
+    /// <summary>
+    /// Дата и время удаления.
+    /// </summary>
+    public DateTime? DeletedAt { get; set; }
 
     /// <summary>
     /// Идентификатор пользователя.

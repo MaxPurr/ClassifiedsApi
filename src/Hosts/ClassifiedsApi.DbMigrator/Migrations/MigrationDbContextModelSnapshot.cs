@@ -143,6 +143,9 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
@@ -150,6 +153,9 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -293,7 +299,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.HasOne("ClassifiedsApi.Domain.Entities.User", "User")
                         .WithMany("Adverts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");

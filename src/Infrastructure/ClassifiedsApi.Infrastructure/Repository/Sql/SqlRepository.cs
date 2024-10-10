@@ -69,7 +69,7 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
         await _dbContext.SaveChangesAsync(token);
         return true;;
     }
-    
+
     /// <inheritdoc />
     public Task<bool> IsAnyExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token)
     {

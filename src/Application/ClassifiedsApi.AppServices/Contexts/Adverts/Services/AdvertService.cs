@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Builders;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
@@ -14,6 +15,7 @@ namespace ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 public class AdvertService : IAdvertService
 {
     private readonly IAdvertRepository _repository;
+    private readonly IAdvertImageService _advertImageService;
     private readonly IAdvertSpecificationBuilder _specificationBuilder;
     
     private readonly IValidator<AdvertCreate> _advertCreateValidator;
@@ -25,6 +27,7 @@ public class AdvertService : IAdvertService
     /// Инициализирует экземпляр класса <see cref="AdvertService"/>.
     /// </summary>
     /// <param name="repository">Репозиторий объвлений <see cref="IAdvertRepository"/>.</param>
+    /// <param name="advertImageService">Сервис фотографий объявлений <see cref="IAdvertImageService"/>.</param>
     /// <param name="specificationBuilder">Строитель спецификаций для объявлений <see cref="IAdvertSpecificationBuilder"/>.</param>
     /// <param name="advertCreateValidator">Валидатор модели создания объявления.</param>
     /// <param name="advertUpdateRequestValidator">Валидатор модели пользовательского запроса на обновление объявления.</param>
@@ -32,6 +35,7 @@ public class AdvertService : IAdvertService
     /// <param name="advertsSearchValidator">Валидатор модели поиска объявлений.</param>
     public AdvertService(
         IAdvertRepository repository,
+        IAdvertImageService advertImageService,
         IAdvertSpecificationBuilder specificationBuilder,
         IValidator<AdvertCreate> advertCreateValidator,
         IValidator<AdvertRequest<AdvertUpdate>> advertUpdateRequestValidator, 
@@ -44,6 +48,7 @@ public class AdvertService : IAdvertService
         _advertUpdateRequestValidator = advertUpdateRequestValidator;
         _advertRequestValidator = advertRequestValidator;
         _advertsSearchValidator = advertsSearchValidator;
+        _advertImageService = advertImageService;
     }
     
     /// <inheritdoc />
@@ -73,11 +78,12 @@ public class AdvertService : IAdvertService
         await _advertUpdateRequestValidator.ValidateAndThrowAsync(advertUpdateRequest, token);
         return await _repository.UpdateAsync(advertUpdateRequest.AdvertId, advertUpdateRequest.Model, token);
     }
-    
+
     /// <inheritdoc />
     public async Task DeleteAsync(AdvertDeleteRequest deleteRequest, CancellationToken token)
     {
         await _advertRequestValidator.ValidateAndThrowAsync(deleteRequest, token);
+        await _advertImageService.DeleteAllAsync(deleteRequest.AdvertId, token);
         await _repository.DeleteAsync(deleteRequest.AdvertId, token);
     }
 }

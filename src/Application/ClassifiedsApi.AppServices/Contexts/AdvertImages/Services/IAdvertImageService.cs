@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.Contracts.Contexts.AdvertImages;
@@ -24,4 +25,12 @@ public interface IAdvertImageService
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task DeleteAsync(AdvertImageDeleteRequest imageDeleteRequest, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для удалений всех фотографий объявления.
+    /// </summary>
+    /// <param name="advertId">Идентификатор объявления.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task DeleteAllAsync(Guid advertId, CancellationToken token);
 }
