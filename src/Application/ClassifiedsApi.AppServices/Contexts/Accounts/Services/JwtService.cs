@@ -14,8 +14,6 @@ namespace ClassifiedsApi.AppServices.Contexts.Accounts.Services;
 /// <inheritdoc />
 public class JwtService : IJwtService
 {
-    private const string TokenType = "jwt";
-    
     private readonly JwtSettings _jwtSettings;
     
     /// <summary>
@@ -28,7 +26,7 @@ public class JwtService : IJwtService
     }
     
     /// <inheritdoc />
-    public AccessToken GetToken(AccountInfo accountInfo)
+    public string GetToken(AccountInfo accountInfo)
     {
         var claims = new List<Claim>
         {
@@ -46,10 +44,6 @@ public class JwtService : IJwtService
             expires: expires,
             signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256));
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
-        return new AccessToken()
-        {
-            Token = token,
-            Type = TokenType
-        };
+        return token;
     }
 }

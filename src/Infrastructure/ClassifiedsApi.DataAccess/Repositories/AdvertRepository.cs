@@ -5,8 +5,8 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Advert;
-using ClassifiedsApi.Contracts.Common.Requests;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
+using ClassifiedsApi.Contracts.Contexts.Users;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
@@ -54,16 +54,15 @@ public class AdvertRepository : IAdvertRepository
         }
         return advert;
     }
-    
+
     /// <inheritdoc />
-    public async Task<AdvertInfo> UpdateAsync(UserAdvertRequest<AdvertUpdate> advertUpdateRequest, CancellationToken token)
+    public async Task<AdvertInfo> UpdateAsync(Guid id, AdvertUpdate advertUpdate, CancellationToken token)
     {
-        var advert = await _repository.GetByIdAsync(advertUpdateRequest.AdvertId, token);
+        var advert = await _repository.FirstOrDefaultAsync(advert => advert.Id == id, token);
         if (advert == null)
         {
             throw new AdvertNotFoundException();
         }
-        var advertUpdate = advertUpdateRequest.Model;
         if (advertUpdate.Title != null)
         {
             advert.Title = advertUpdate.Title;
@@ -87,34 +86,22 @@ public class AdvertRepository : IAdvertRepository
     /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken token)
     { 
-        var success = await _repository.DeleteByIdAsync(id, token);
+        var success = await _repository.DeleteFirstAsync(advert => advert.Id == id, token);
         if (!success)
         {
             throw new AdvertNotFoundException();
-        }
-    }
-    
-    /// <inheritdoc />
-    public async Task DeleteAsync(Guid advertId, Guid userId, CancellationToken token)
-    {
-        var success = await _repository.DeleteFirstAsync(advert => advert.Id == advertId && advert.UserId == userId, token);
-        if (!success)
-        {
-            throw new UserAdvertNotFoundException();
         }
     }
 
     /// <inheritdoc />
     public Task<bool> IsExistsAsync(Guid id, CancellationToken token)
     {
-        return _repository.IsExistAsync(id, token);
+        return _repository.IsAnyExistAsync(advert => advert.Id == id, token);
     }
     
     /// <inheritdoc />
-    public Task<bool> IsExistsAsync(Guid advertId, Guid userId, CancellationToken token)
+    public Task<bool> IsExistsAsync(Guid userId, Guid advertId, CancellationToken token)
     {
-        return _repository
-            .GetAll()
-            .AnyAsync(advert => advert.Id == advertId && advert.UserId == userId, token);
+        return _repository.IsAnyExistAsync(advert => advert.Id == advertId && advert.UserId == userId, token);
     }
 }

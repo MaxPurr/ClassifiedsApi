@@ -5,8 +5,8 @@ namespace ClassifiedsApi.Domain.Base;
 /// <summary>
 /// Базовый класс для всех сущностей.
 /// </summary>
-public abstract class BaseEntity : ISqlEntity {
-    /// <inheritdoc />
+public abstract class BaseEntity {
+    /// Идентификатор.
     public Guid Id { get; set; }
     
     /// <summary>

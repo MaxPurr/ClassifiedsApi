@@ -8,7 +8,7 @@ public class CharacteristicConfiguration : IEntityTypeConfiguration<Characterist
 {
     public void Configure(EntityTypeBuilder<Characteristic> builder)
     {
-        builder.ToTable("Characteristics").HasKey(characteristic => new { characteristic.Id, characteristic.AdvertId });
+        builder.ToTable("Characteristics").HasKey(characteristic => new { characteristic.Id, characteristic.AdvertId});
         builder.Property(characteristic => characteristic.CreatedAt).IsRequired();
         builder.Property(characteristic => characteristic.Name).HasMaxLength(255);
         builder.HasAlternateKey(characteristic => new {characteristic.Name, characteristic.AdvertId});

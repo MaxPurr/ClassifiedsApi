@@ -1,6 +1,9 @@
 using System;
 using System.Security.Claims;
-using ClassifiedsApi.Contracts.Common.Requests;
+using ClassifiedsApi.Contracts.Contexts.Adverts;
+using ClassifiedsApi.Contracts.Contexts.Characteristics;
+using ClassifiedsApi.Contracts.Contexts.Files;
+using ClassifiedsApi.Contracts.Contexts.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,20 +61,36 @@ public abstract class ApplicationController : ControllerBase
             Model = model
         };
     }
-    
+
     /// <summary>
     /// Метод для получения типизированной модели пользовательского запроса объявления.
     /// </summary>
+    /// <param name="advertId">Идентификатор объявления.</param>
     /// <param name="model">Модель запроса.</param>
     /// <typeparam name="TModel">Тип модели запроса.</typeparam>
     /// <returns>Модель пользовательского запроса объявления.</returns>
-    protected UserAdvertRequest<TModel> GetUserAdvertRequest<TModel>(Guid advertId, TModel model) where TModel : class
+    protected AdvertRequest<TModel> GetAdvertRequest<TModel>(Guid advertId, TModel model) where TModel : class
     {
-        return new UserAdvertRequest<TModel>
+        return new AdvertRequest<TModel>
         {
             UserId = CurrentUserId,
             AdvertId = advertId,
             Model = model
+        };
+    }
+    
+    /// <summary>
+    /// Метод для получения модели загрузки файла на сервер.
+    /// </summary>
+    /// <param name="file">Файл.</param>
+    /// <returns>Модель загрузки файла на сервер.</returns>
+    protected FileUpload GetFileUpload(IFormFile file)
+    {
+        return new FileUpload
+        {
+            Name = file.FileName,
+            ContentType = file.ContentType,
+            ReadStream = file.OpenReadStream()
         };
     }
 }

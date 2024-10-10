@@ -1,17 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ClassifiedsApi.Domain.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApi.Infrastructure.Repository.Sql;
 
 /// <inheritdoc />
 public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext> 
-    where TEntity : class, ISqlEntity 
+    where TEntity : class
     where TContext : DbContext
 {
     private readonly TContext _dbContext;
@@ -40,12 +38,6 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
     }
     
     /// <inheritdoc />
-    public Task<TEntity?> GetByIdAsync(Guid id, CancellationToken token)
-    {
-        return FirstOrDefaultAsync(entity => entity.Id == id, token);
-    }
-    
-    /// <inheritdoc />
     public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token)
     {
         return _dbSet.FirstOrDefaultAsync(predicate, token);
@@ -55,13 +47,6 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
     public async Task AddAsync(TEntity entity, CancellationToken token)
     {
         await _dbSet.AddAsync(entity, token);
-        await _dbContext.SaveChangesAsync(token);
-    }
-    
-    /// <inheritdoc />
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken token)
-    {
-        await _dbSet.AddRangeAsync(entities, token);
         await _dbContext.SaveChangesAsync(token);
     }
 
@@ -84,16 +69,10 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
         await _dbContext.SaveChangesAsync(token);
         return true;;
     }
-
+    
     /// <inheritdoc />
-    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token)
+    public Task<bool> IsAnyExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token)
     {
-        return DeleteFirstAsync(entity => entity.Id == id, token);
-    }
-
-    /// <inheritdoc />
-    public Task<bool> IsExistAsync(Guid id, CancellationToken token)
-    {
-        return _dbSet.AnyAsync(entity => entity.Id == id, token);
+        return _dbSet.AnyAsync(predicate, token);
     }
 }

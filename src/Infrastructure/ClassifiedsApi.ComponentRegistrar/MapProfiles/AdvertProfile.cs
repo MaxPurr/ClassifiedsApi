@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using AutoMapper;
-using ClassifiedsApi.Contracts.Common.Requests;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
+using ClassifiedsApi.Contracts.Contexts.Users;
 using ClassifiedsApi.Domain.Entities;
 
 namespace ClassifiedsApi.ComponentRegistrar.MapProfiles;
@@ -32,6 +32,6 @@ public class AdvertProfile : Profile
             );
 
         CreateMap<Advert, AdvertInfo>(MemberList.None)
-            .ForMember(info => info.ImageIds, map => map.MapFrom(advert => advert.Images.Select(image => image.ImageId)));
+            .ForMember(info => info.ImageIds, map => map.MapFrom(advert => advert.Images.Select(advertImage => advertImage.ImageId)));
     }
 }

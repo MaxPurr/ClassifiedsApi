@@ -22,15 +22,18 @@ public class AdvertCreateValidator : AbstractValidator<AdvertCreate>
             .NotEmpty()
             .MinimumLength(3)
             .MaximumLength(255);
+        
         RuleFor(advertCreate => advertCreate.Description)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MinimumLength(3)
             .MaximumLength(1000);
+        
         RuleFor(advertCreate => advertCreate.Price)
             .Cascade(CascadeMode.Stop)
             .NotNull()
             .GreaterThanOrEqualTo(0);
+
         RuleForEach(advertCreate => advertCreate.Characteristics)
             .ChildRules(characteristic =>
             {
@@ -41,10 +44,11 @@ public class AdvertCreateValidator : AbstractValidator<AdvertCreate>
                     .WithName("Characteristic name");
                 characteristic.RuleFor(pair => pair.Value)
                     .Cascade(CascadeMode.Stop)
-                    .MinimumLength(3)
-                    .MaximumLength(255)
+                    .MinimumLength(1)
+                    .MaximumLength(1000)
                     .WithName("Characteristic value");
             });
+
         RuleFor(advertCreate => advertCreate.CategoryId)
             .Cascade(CascadeMode.Stop)
             .NotNull()

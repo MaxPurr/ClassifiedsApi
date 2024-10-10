@@ -14,6 +14,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.HasMany(comment => comment.ChildComments)
             .WithOne(comment => comment.ParentComment)
             .HasForeignKey(comment => comment.ParentId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

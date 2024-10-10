@@ -1,14 +1,14 @@
-using ClassifiedsApi.Contracts.Common.Requests;
+using ClassifiedsApi.Contracts.Contexts.Adverts;
 
 namespace ClassifiedsApi.Contracts.Contexts.Characteristics;
 
 /// <summary>
 /// Модель пользовательского запроса на удаление харакатеристики объявления.
 /// </summary>
-public class CharacteristicDeleteRequest : UserAdvertRequest
+public class CharacteristicDeleteRequest : AdvertRequest
 {
     /// <summary>
-    /// Идентификатор характеристики.
+    /// Идентификатор характеристики объявления.
     /// </summary>
-    public Guid CharacteristicId { get; set; }
+    public required Guid CharacteristicId { get; init; }
 }

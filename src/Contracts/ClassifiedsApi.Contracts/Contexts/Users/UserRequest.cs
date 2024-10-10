@@ -1,4 +1,4 @@
-namespace ClassifiedsApi.Contracts.Common.Requests;
+namespace ClassifiedsApi.Contracts.Contexts.Users;
 
 /// <summary>
 /// Базовая модель пользовательского запроса.

@@ -1,6 +1,5 @@
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
-using ClassifiedsApi.Contracts.Common.Requests;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using FluentValidation;
 
@@ -9,7 +8,7 @@ namespace ClassifiedsApi.AppServices.Contexts.Adverts.Validators;
 /// <summary>
 /// Валидатор модели пользовательского запроса на обновление объявления.
 /// </summary>
-public class AdvertUpdateRequestValidator : UserAdvertRequestValidator<UserAdvertRequest<AdvertUpdate>>
+public class AdvertUpdateRequestValidator : AdvertRequestValidator<AdvertRequest<AdvertUpdate>>
 {
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="AdvertUpdateRequestValidator"/>.

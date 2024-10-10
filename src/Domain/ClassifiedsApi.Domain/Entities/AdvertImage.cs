@@ -1,12 +1,11 @@
 using System;
-using ClassifiedsApi.Domain.Base;
 
 namespace ClassifiedsApi.Domain.Entities;
 
 /// <summary>
 /// Модель фотографии объявления.
 /// </summary>
-public class AdvertImage : BaseEntity
+public class AdvertImage
 {
     /// <summary>
     /// Идентификатор фотографии.

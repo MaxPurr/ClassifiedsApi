@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Categories.Services;
 using ClassifiedsApi.Contracts.Contexts.Categories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedsApi.Api.Controllers;
@@ -37,13 +38,13 @@ public class CategoryController : ControllerBase
     /// <returns>Идентификатор новой категории.</returns>
     [HttpPost]
     // [Authorize(Roles = "admin")]
-    [ProducesResponseType(typeof(Guid), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateAsync([FromBody] CategoryCreate categoryCreate, CancellationToken token)
     {
         var id = await _service.CreateAsync(categoryCreate, token);
-        return StatusCode((int)HttpStatusCode.Created, id);
+        return StatusCode(StatusCodes.Status201Created, id);
     }
     
     /// <summary>
@@ -53,8 +54,8 @@ public class CategoryController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Модель информации о категории.</returns>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(CategoryInfo), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(CategoryInfo), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetInfoAsync([FromRoute] Guid id, CancellationToken token)
     {
         var categoryInfo = await _service.GetInfoAsync(id, token);
@@ -68,7 +69,7 @@ public class CategoryController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Список категорий.</returns>
     [HttpPost("search")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<CategoryInfo>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IReadOnlyCollection<CategoryInfo>), StatusCodes.Status200OK)]
     public async Task<IActionResult> SearchAsync([FromBody] CategoriesSearch search, CancellationToken token)
     {
         var categories = await _service.SearchAsync(search, token);
@@ -83,14 +84,14 @@ public class CategoryController : ControllerBase
     /// <returns></returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "admin")]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken token)
     {
         await _service.DeleteAsync(id, token);
-        return Ok();
+        return NoContent();
     }
     
     /// <summary>
@@ -102,7 +103,7 @@ public class CategoryController : ControllerBase
     /// <returns>Модель обновленной информации о категории.</returns>
     [HttpPatch("{id:guid}")]
     [Authorize(Roles = "admin")]
-    [ProducesResponseType(typeof(CategoryInfo), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]

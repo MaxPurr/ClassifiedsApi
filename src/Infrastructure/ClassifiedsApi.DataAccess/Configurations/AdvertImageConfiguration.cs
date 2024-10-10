@@ -8,8 +8,6 @@ public class AdvertImageConfiguration : IEntityTypeConfiguration<AdvertImage>
 {
     public void Configure(EntityTypeBuilder<AdvertImage> builder)
     {
-        builder.ToTable("AdvertPhoto").HasKey(advertPhoto => advertPhoto.Id);
-        builder.Property(advertPhoto => advertPhoto.CreatedAt).IsRequired();
-        builder.Property(advertPhoto => advertPhoto.ImageId).IsRequired();
+        builder.ToTable("AdvertImages").HasKey(advertImage => new {advertImage.ImageId, advertImage.AdvertId});
     }
 }
