@@ -24,7 +24,9 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
         _dbContext = context;
         _dbSet = _dbContext.Set<TEntity>();
     }
-    
+
+    public DbContext Context => _dbContext;
+
     /// <inheritdoc />
     public IQueryable<TEntity> GetAll()
     {

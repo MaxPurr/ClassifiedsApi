@@ -1,5 +1,7 @@
 using System;
 using ClassifiedsApi.AppServices.Common.Validators;
+using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
+using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using FluentValidation;
 
@@ -13,7 +15,8 @@ public class AdvertsSearchValidator : BasePaginationValidator<AdvertsSearch>
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="AdvertsSearchValidator"/>.
     /// </summary>
-    public AdvertsSearchValidator()
+    /// <param name="categoryRepository">Репозиторий категорий <see cref="ICategoryRepository"/>.</param>
+    public AdvertsSearchValidator(ICategoryRepository categoryRepository)
     {
         When(search => search.TextFilter != null, () =>
         {
@@ -27,8 +30,12 @@ public class AdvertsSearchValidator : BasePaginationValidator<AdvertsSearch>
         RuleFor(search => search.MaxPrice)
             .GreaterThanOrEqualTo(0);
 
-        RuleFor(search => search.FilterByCategoryId)
-            .NotEqual(Guid.Empty);
+        When(search => search.FilterByCategoryId != null, () =>
+        {
+            RuleFor(search => search.FilterByCategoryId)
+                .NotEqual(Guid.Empty)
+                .SetValidator(new CategoryExistsValidator(categoryRepository));
+        }); 
         
         RuleFor(search => search.Order)
             .NotNull();

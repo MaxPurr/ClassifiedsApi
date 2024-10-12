@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Specifications;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
-using ClassifiedsApi.Contracts.Contexts.Users;
 
 namespace ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 
@@ -16,10 +15,10 @@ public interface IAdvertRepository
     /// <summary>
     /// Метод для создания объявления.
     /// </summary>
-    /// <param name="advertCreateRequest">Модель пользовательского запроса на создание объявления.</param>
+    /// <param name="createRequest">Запрос на создание объявления <see cref="AdvertCreateRequest"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Идентификатор созданного объявления.</returns>
-    Task<Guid> CreateAsync(UserRequest<AdvertCreate> advertCreateRequest, CancellationToken token);
+    Task<Guid> CreateAsync(AdvertCreateRequest createRequest, CancellationToken token);
     
     /// <summary>
     /// Метод для получения объявления.
@@ -32,7 +31,7 @@ public interface IAdvertRepository
     /// <summary>
     /// Метод для получения объявлений по спецификации с пагинацией.
     /// </summary>
-    /// <param name="specification">Спецификация <see cref="ISpecification"/>.</param>
+    /// <param name="specification">Спецификация <see cref="ISpecification{TEntity}"/>.</param>
     /// <param name="skip">Количество элементов для пропуска.</param>
     /// <param name="take">Количество элементов для получения.</param>
     /// <param name="order">Модель сортировки объявлений <see cref="AdvertsOrder"/>.</param>
@@ -71,11 +70,10 @@ public interface IAdvertRepository
     Task<bool> IsExistsAsync(Guid id, CancellationToken token);
     
     /// <summary>
-    /// Проверяет принадлежит ли объявление пользователю.
+    /// Метод для получения идентификатора пользователя объявления.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя <see cref="Guid"/>.</param>
-    /// <param name="advertId">Идентификатор объявления <see cref="Guid"/>.</param>
+    /// <param name="id">Идентификатор объявления.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
-    /// <returns><code data-dev-comment-type="langword">true</code> если объявление принадлежит пользователю, иначе <code data-dev-comment-type="langword">false</code>.</returns>
-    Task<bool> IsExistsAsync(Guid userId, Guid advertId,CancellationToken token);
+    /// <returns>Идентификатор пользователя.</returns>
+    Task<Guid> GetUserIdAsync(Guid id, CancellationToken token);
 }

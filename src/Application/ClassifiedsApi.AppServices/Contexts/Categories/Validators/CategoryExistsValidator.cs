@@ -8,7 +8,7 @@ using FluentValidation;
 namespace ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 
 /// <summary>
-/// Валидатор, проверяющий существует ли категория с указанным ID.
+/// Валидатор, проверяющий существует ли категория с указанным идентификатором.
 /// </summary>
 
 [IgnoreAutomaticRegistration]
@@ -25,7 +25,7 @@ public class CategoryExistsValidator : AbstractValidator<Guid?>
         _categoryRepository = categoryRepository;
         RuleFor(id => id)
             .MustAsync(IsCategoryExistsAsync)
-            .WithMessage("Категория с указанным ID не найдена.");;
+            .WithMessage("Категория с указанным идентификатором не найдена.");
     }
     
     private async Task<bool> IsCategoryExistsAsync(Guid? id, CancellationToken token)
@@ -34,6 +34,6 @@ public class CategoryExistsValidator : AbstractValidator<Guid?>
         {
             return false;
         }
-        return await _categoryRepository.IsExistsAsync(id.Value, token);
+        return await _categoryRepository.IsExistsAsync(id.GetValueOrDefault(), token);
     }
 }

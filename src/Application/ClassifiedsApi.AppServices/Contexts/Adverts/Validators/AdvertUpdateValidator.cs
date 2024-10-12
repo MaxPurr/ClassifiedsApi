@@ -1,4 +1,3 @@
-using ClassifiedsApi.AppServices.Common.Validators;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
@@ -9,8 +8,6 @@ namespace ClassifiedsApi.AppServices.Contexts.Adverts.Validators;
 /// <summary>
 /// Валидатор модели обновления объявления <see cref="AdvertUpdate"/>.
 /// </summary>
-
-[IgnoreAutomaticRegistration]
 public class AdvertUpdateValidator : AbstractValidator<AdvertUpdate>
 {
     /// <summary>
@@ -19,6 +16,10 @@ public class AdvertUpdateValidator : AbstractValidator<AdvertUpdate>
     /// <param name="categoryRepository">Репозиторий категорий <see cref="ICategoryRepository"/>.</param>
     public AdvertUpdateValidator(ICategoryRepository categoryRepository)
     {
+        RuleFor(update => update)
+            .Must(IsNotEmpty)
+            .WithMessage("Модель обновления объявления не может быть пустой.");
+        
         When(update => update.Title != null, () =>
         {
             RuleFor(update => update.Title)
@@ -46,5 +47,14 @@ public class AdvertUpdateValidator : AbstractValidator<AdvertUpdate>
             RuleFor(update => update.CategoryId)
                 .SetValidator(new CategoryExistsValidator(categoryRepository));
         });
+    }
+    
+    private static bool IsNotEmpty(AdvertUpdate advertUpdate)
+    {
+        return advertUpdate.Title != null 
+               || advertUpdate.Description != null
+               || advertUpdate.CategoryId != null
+               || advertUpdate.Price != null
+               || advertUpdate.Disabled != null;
     }
 }

@@ -16,6 +16,8 @@ public interface ISqlRepository<TEntity, TContext>
     where TEntity : class
     where TContext : DbContext
 {
+    DbContext Context { get; }
+    
     /// <summary>
     /// Метод для получения всех сущностей.
     /// </summary>

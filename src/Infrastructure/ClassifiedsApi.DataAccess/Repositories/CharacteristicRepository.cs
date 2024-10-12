@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Characteristics;
-using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
@@ -30,9 +29,9 @@ public class CharacteristicRepository : ICharacteristicRepository
     }
     
     /// <inheritdoc />
-    public async Task<Guid> AddAsync(AdvertRequest<CharacteristicAdd> characteristicAddRequest, CancellationToken token)
+    public async Task<Guid> AddAsync(CharacteristicAddRequest addRequest, CancellationToken token)
     {
-        var advertCharacteristic = _mapper.Map<Characteristic>(characteristicAddRequest);
+        var advertCharacteristic = _mapper.Map<Characteristic>(addRequest);
         await _repository.AddAsync(advertCharacteristic, token);
         return advertCharacteristic.Id;
     }

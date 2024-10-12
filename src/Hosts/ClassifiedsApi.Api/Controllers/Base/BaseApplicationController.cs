@@ -1,8 +1,6 @@
 using System;
 using System.Security.Claims;
-using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Files;
-using ClassifiedsApi.Contracts.Contexts.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,38 +42,6 @@ public abstract class BaseApplicationController : ControllerBase
             }
             throw new UnauthorizedAccessException();
         }
-    }
-    
-    /// <summary>
-    /// Метод для получения типизированной модели пользовательского запроса.
-    /// </summary>
-    /// <param name="model">Модель запроса.</param>
-    /// <typeparam name="TModel">Тип модели запроса.</typeparam>
-    /// <returns>Модель пользовательского запроса.</returns>
-    protected UserRequest<TModel> GetUserRequest<TModel>(TModel model) where TModel : class
-    {
-        return new UserRequest<TModel>
-        {
-            UserId = CurrentUserId,
-            Model = model
-        };
-    }
-
-    /// <summary>
-    /// Метод для получения типизированной модели пользовательского запроса объявления.
-    /// </summary>
-    /// <param name="advertId">Идентификатор объявления.</param>
-    /// <param name="model">Модель запроса.</param>
-    /// <typeparam name="TModel">Тип модели запроса.</typeparam>
-    /// <returns>Модель пользовательского запроса объявления.</returns>
-    protected AdvertRequest<TModel> GetAdvertRequest<TModel>(Guid advertId, TModel model) where TModel : class
-    {
-        return new AdvertRequest<TModel>
-        {
-            UserId = CurrentUserId,
-            AdvertId = advertId,
-            Model = model
-        };
     }
     
     /// <summary>

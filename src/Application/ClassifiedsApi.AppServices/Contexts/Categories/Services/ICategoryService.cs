@@ -42,14 +42,15 @@ public interface ICategoryService
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task DeleteAsync(Guid id, CancellationToken token);
-    
+
     /// <summary>
     /// Метод для обновления категории.
     /// </summary>
-    /// <param name="updateRequest">Модель запроса на обновление категории.</param>
+    /// <param name="id">Идентификатор категории.</param>
+    /// <param name="categoryUpdate">Модель обновления категории <see cref="CategoryUpdate"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Модель обновленной информации о категории <see cref="CategoryInfo"/>.</returns>
-    Task<CategoryInfo> UpdateAsync(CategoryRequest<CategoryUpdate> updateRequest, CancellationToken token);
+    Task<CategoryInfo> UpdateAsync(Guid id, CategoryUpdate categoryUpdate, CancellationToken token);
     
     /// <summary>
     /// Метод для проверки существования категории.

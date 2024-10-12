@@ -22,14 +22,3 @@ public class CategoriesSearch : BasePagination
     /// </summary>
     public CategoriesOrder? Order { get; set; }
 }
-
-/// <summary>
-/// Модель фильтрации по идентификатору родительской категории.
-/// </summary>
-public class FilterByParentId
-{
-    /// <summary>
-    /// Идентификатор родительской категории.
-    /// </summary>
-    public Guid? ParentId { get; set; } = Guid.Empty;
-}

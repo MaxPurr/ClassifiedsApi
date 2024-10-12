@@ -14,7 +14,7 @@ namespace ClassifiedsApi.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;

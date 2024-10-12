@@ -19,7 +19,7 @@ namespace ClassifiedsApi.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-public class CategoryController : BaseAdminController
+public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _service;
     
@@ -114,8 +114,7 @@ public class CategoryController : BaseAdminController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] CategoryUpdate categoryUpdate, CancellationToken token)
     {
-        var updateRequest = GetCategoryRequest(id, categoryUpdate);
-        var categoryInfo = await _service.UpdateAsync(updateRequest, token);
+        var categoryInfo = await _service.UpdateAsync(id, categoryUpdate, token);
         return Ok(categoryInfo);
     }
 }

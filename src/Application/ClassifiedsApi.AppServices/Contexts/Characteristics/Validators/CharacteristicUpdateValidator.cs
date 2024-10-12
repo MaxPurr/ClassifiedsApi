@@ -1,6 +1,3 @@
-using System;
-using ClassifiedsApi.AppServices.Common.Validators;
-using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
 using FluentValidation;
 
@@ -10,20 +7,21 @@ namespace ClassifiedsApi.AppServices.Contexts.Characteristics.Validators;
 /// Валидатор модели обновления характеристики объявления <see cref="CharacteristicUpdate"/>.
 /// </summary>
 
-[IgnoreAutomaticRegistration]
 public class CharacteristicUpdateValidator : AbstractValidator<CharacteristicUpdate>
 {
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="CharacteristicUpdateValidator"/>.
     /// </summary>
-    /// <param name="advertId">Идентификатор объявления.</param>
-    /// <param name="characteristicRepository">Репозиторий характеристик объявлений <see cref="ICharacteristicRepository"/>.</param>
-    public CharacteristicUpdateValidator(Guid advertId, ICharacteristicRepository characteristicRepository)
+    public CharacteristicUpdateValidator()
     {
+        RuleFor(characteristicUpdate => characteristicUpdate)
+            .Must(IsNotEmpty)
+            .WithMessage("Модель обновления характеристики объявления не может быть пустой.");
+        
         When(characteristicUpdate => characteristicUpdate.Name != null, () =>
         {
             RuleFor(characteristicUpdate => characteristicUpdate.Name)
-                .SetValidator(new CharacteristicNameValidator(advertId, characteristicRepository));
+                .SetValidator(new CharacteristicNameValidator());
         });
         
         When(characteristicUpdate => characteristicUpdate.Value != null, () =>
@@ -31,5 +29,11 @@ public class CharacteristicUpdateValidator : AbstractValidator<CharacteristicUpd
             RuleFor(characteristicUpdate => characteristicUpdate.Value)
                 .SetValidator(new CharacteristicValueValidator());
         });
+    }
+    
+    private static bool IsNotEmpty(CharacteristicUpdate characteristicUpdate)
+    {
+        return characteristicUpdate.Name != null || 
+               characteristicUpdate.Value != null;
     }
 }

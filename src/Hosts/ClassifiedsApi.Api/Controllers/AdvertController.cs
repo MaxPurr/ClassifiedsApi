@@ -7,10 +7,11 @@ using ClassifiedsApi.Api.Controllers.Base;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
+using ClassifiedsApi.AppServices.Contexts.Comments.Services;
 using ClassifiedsApi.Contracts.Common.Errors;
-using ClassifiedsApi.Contracts.Contexts.AdvertImages;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
+using ClassifiedsApi.Contracts.Contexts.Comments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ public class AdvertController : BaseApplicationController
     private readonly IAdvertService _advertService;
     private readonly ICharacteristicService _characteristicService;
     private readonly IAdvertImageService _advertImageService;
+    private readonly ICommentService _commentService;
 
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="AdvertController"/>.
@@ -35,17 +37,20 @@ public class AdvertController : BaseApplicationController
     /// <param name="httpContextAccessor">Средство доступа к HTTP-контексту.</param>
     /// <param name="advertService">Сервис объявлений <see cref="IAdvertService"/>.</param>
     /// <param name="characteristicService">Сервис характеристик объявлений <see cref="ICharacteristicService"/>.</param>
-    /// <param name="advertImageService">Репозиторий фотографий объявлений.</param>
+    /// <param name="advertImageService">Сервис фотографий объявлений <see cref="IAdvertImageService"/>.</param>
+    /// <param name="commentService">Сервис комментариев <see cref="ICommentService"/>.</param>
     public AdvertController(
         IHttpContextAccessor httpContextAccessor, 
         IAdvertService advertService,
         ICharacteristicService characteristicService, 
-        IAdvertImageService advertImageService) 
+        IAdvertImageService advertImageService, 
+        ICommentService commentService) 
         : base(httpContextAccessor)
     {
         _advertService = advertService;
         _characteristicService = characteristicService;
         _advertImageService = advertImageService;
+        _commentService = commentService;
     }
     
     /// <summary>
@@ -61,8 +66,7 @@ public class AdvertController : BaseApplicationController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateAsync([FromBody] AdvertCreate advertCreate, CancellationToken token)
     {
-        var advertCreateRequest = GetUserRequest(advertCreate);
-        var id = await _advertService.CreateAsync(advertCreateRequest, token);
+        var id = await _advertService.CreateAsync(CurrentUserId, advertCreate, token);
         return StatusCode(StatusCodes.Status201Created, id);
     }
     
@@ -108,11 +112,11 @@ public class AdvertController : BaseApplicationController
     [ProducesResponseType(typeof(AdvertInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] AdvertUpdate advertUpdate, CancellationToken token)
     {
-        var advertUpdateRequest = GetAdvertRequest(id, advertUpdate);
-        var advertInfo = await _advertService.UpdateAsync(advertUpdateRequest, token);
+        var advertInfo = await _advertService.UpdateAsync(CurrentUserId, id, advertUpdate, token);
         return Ok(advertInfo);
     }
     
@@ -126,16 +130,12 @@ public class AdvertController : BaseApplicationController
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, CancellationToken token)
     {
-        var advertDeleteRequest = new AdvertDeleteRequest
-        {
-            AdvertId = id,
-            UserId = CurrentUserId,
-        };
-        await _advertService.DeleteAsync(advertDeleteRequest, token);
-        return NoContent();  
+        await _advertService.DeleteAsync(CurrentUserId, id, token);
+        return NoContent();
     }
 
     /// <summary>
@@ -145,18 +145,18 @@ public class AdvertController : BaseApplicationController
     /// <param name="characteristicAdd">Модель добавления характеристики объявления.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Идентификатор добавленной характеристики объявления.</returns>
-    [HttpPost("{id:guid}/characteristic")]
+    [HttpPost("{id:guid}/characteristics")]
     [Authorize]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddCharacteristicAsync(
         [FromRoute] Guid id, 
         [FromBody] CharacteristicAdd characteristicAdd, 
         CancellationToken token)
     {
-        var characteristicAddRequest = GetAdvertRequest(id, characteristicAdd);
-        var characteristicId = await _characteristicService.AddAsync(characteristicAddRequest, token);
+        var characteristicId = await _characteristicService.AddAsync(CurrentUserId, id, characteristicAdd, token);
         return StatusCode(StatusCodes.Status201Created, characteristicId);
     }
     
@@ -167,21 +167,15 @@ public class AdvertController : BaseApplicationController
     /// <param name="characteristicId">Идентификатор характеристики объявления.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns></returns>
-    [HttpDelete("{id:guid}/characteristic/{characteristicId:guid}")]
+    [HttpDelete("{id:guid}/characteristics/{characteristicId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteCharacteristicAsync([FromRoute] Guid id, [FromRoute] Guid characteristicId, CancellationToken token)
     {
-        var characteristicDeleteRequest = new CharacteristicDeleteRequest
-        {
-            UserId = CurrentUserId,
-            AdvertId = id,
-            CharacteristicId = characteristicId
-        };
-        await _characteristicService.DeleteAsync(characteristicDeleteRequest, token);
+        await _characteristicService.DeleteAsync(CurrentUserId, id, characteristicId, token);
         return NoContent();
     }
 
@@ -193,11 +187,12 @@ public class AdvertController : BaseApplicationController
     /// <param name="characteristicUpdate">Модель обновления характеристики объявления.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Модель обновленной информации о характеристике объявления.</returns>
-    [HttpPatch("{id:guid}/characteristic/{characteristicId:guid}")]
+    [HttpPatch("{id:guid}/characteristics/{characteristicId:guid}")]
     [Authorize]
     [ProducesResponseType(typeof(CharacteristicInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateCharacteristicAsync(
         [FromRoute] Guid id, 
@@ -205,14 +200,7 @@ public class AdvertController : BaseApplicationController
         [FromBody] CharacteristicUpdate characteristicUpdate,
         CancellationToken token)
     {
-        var characteristicUpdateRequest = new CharacteristicUpdateRequest
-        {
-            UserId = CurrentUserId,
-            AdvertId = id,
-            CharacteristicId = characteristicId,
-            Model = characteristicUpdate
-        };
-        var characteristic = await _characteristicService.UpdateAsync(characteristicUpdateRequest, token);
+        var characteristic = await _characteristicService.UpdateAsync(CurrentUserId, id, characteristicId, characteristicUpdate, token);
         return Ok(characteristic);
     }
 
@@ -223,23 +211,19 @@ public class AdvertController : BaseApplicationController
     /// <param name="file">Файл.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Идентификатор добавленной фотографии.</returns>
-    [HttpPost("{id:guid}/image")]
+    [HttpPost("{id:guid}/images")]
     [Authorize]
     [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UploadImageAsync(
         [FromRoute] Guid id,
         IFormFile file,
         CancellationToken token)
     {
-        var imageUploadRequest = new AdvertImageUploadRequest
-        {
-            UserId = CurrentUserId,
-            AdvertId = id,
-            ImageUpload = GetFileUpload(file)
-        };
-        var imageId = await _advertImageService.UploadAsync(imageUploadRequest, token);
+        var imageUpload = GetFileUpload(file);
+        var imageId = await _advertImageService.UploadAsync(CurrentUserId, id, imageUpload, token);
         return StatusCode(StatusCodes.Status201Created, imageId);
     }
     
@@ -250,24 +234,55 @@ public class AdvertController : BaseApplicationController
     /// <param name="imageId">Идентификатор фотографии.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns></returns>
-    [HttpDelete("{id:guid}/image/{imageId}")]
+    [HttpDelete("{id:guid}/images/{imageId}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteImageAsync(
         [FromRoute] Guid id,
         [FromRoute] string imageId,
         CancellationToken token)
     {
-        var imageDeleteRequest = new AdvertImageDeleteRequest
-        {
-            UserId = CurrentUserId,
-            AdvertId = id,
-            ImageId = imageId
-        };
-        await _advertImageService.DeleteAsync(imageDeleteRequest, token);
+        await _advertImageService.DeleteAsync(CurrentUserId, id, imageId, token);
         return NoContent();
+    }
+    
+    /// <summary>
+    /// Метод для создания комментария объявления.
+    /// </summary>
+    /// <param name="id">Идентификатор объявления.</param>
+    /// <param name="commentCreate">Модель создания комментария.</param>
+    /// <param name="token">Токен отмены операции.</param>
+    /// <returns>Идентификатор созданного комментария.</returns>
+    [HttpPost("{id:guid}/comments")]
+    [Authorize]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateCommentAsync(
+        [FromRoute] Guid id, 
+        [FromBody] CommentCreate commentCreate, 
+        CancellationToken token)
+    {
+        var commentId = await _commentService.CreateAsync(CurrentUserId, id, commentCreate, token);
+        return StatusCode(StatusCodes.Status201Created, commentId);
+    }
+
+    /// <summary>
+    /// Метод для получения комментариев объявления.
+    /// </summary>
+    /// <param name="id">Идентификатор объявления.</param>
+    /// <param name="search">Модель поиска комментариев.</param>
+    /// <param name="token">Токен отмены операции.</param>
+    /// <returns>Коллекция комментариев.</returns>
+    [HttpPost("{id:guid}/comments/search")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<CommentInfo>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SearchCommentsAsync([FromRoute]Guid id, [FromBody] CommentsSearch search, CancellationToken token)
+    {
+        var comments = await _commentService.SearchAsync(id, search, token);
+        return Ok(comments);
     }
 }
