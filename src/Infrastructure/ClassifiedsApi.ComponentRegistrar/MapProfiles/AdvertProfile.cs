@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using AutoMapper;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
-using ClassifiedsApi.Contracts.Contexts.Users;
 using ClassifiedsApi.Domain.Entities;
 
 namespace ClassifiedsApi.ComponentRegistrar.MapProfiles;
@@ -11,17 +10,17 @@ public class AdvertProfile : Profile
 {
     public AdvertProfile(TimeProvider timeProvider)
     {
-        CreateMap<UserRequest<AdvertCreate>, Advert>(MemberList.None)
+        CreateMap<AdvertCreateRequest, Advert>(MemberList.None)
             .ForMember(advert => advert.Id, map => map.MapFrom(_ => Guid.NewGuid()))
             .ForMember(advert => advert.CreatedAt, map => map.MapFrom(_ => timeProvider.GetUtcNow().UtcDateTime))
-            .ForMember(advert => advert.Title, map => map.MapFrom(request => request.Model.Title))
-            .ForMember(advert => advert.Description, map => map.MapFrom(request => request.Model.Description))
-            .ForMember(advert => advert.Price, map => map.MapFrom(request => request.Model.Price))
+            .ForMember(advert => advert.Title, map => map.MapFrom(request => request.AdvertCreate.Title))
+            .ForMember(advert => advert.Description, map => map.MapFrom(request => request.AdvertCreate.Description))
+            .ForMember(advert => advert.Price, map => map.MapFrom(request => request.AdvertCreate.Price))
             .ForMember(advert => advert.Disabled, map => map.MapFrom(_ => false))
-            .ForMember(advert => advert.CategoryId, map => map.MapFrom(request => request.Model.CategoryId))
+            .ForMember(advert => advert.CategoryId, map => map.MapFrom(request => request.AdvertCreate.CategoryId))
             .AfterMap((request, advert) =>
                 {
-                    advert.Characteristics = request.Model.Characteristics.Select(pair => new Characteristic
+                    advert.Characteristics = request.AdvertCreate.Characteristics.Select(pair => new Characteristic
                     {
                         Id = Guid.NewGuid(),
                         CreatedAt = timeProvider.GetUtcNow().UtcDateTime,

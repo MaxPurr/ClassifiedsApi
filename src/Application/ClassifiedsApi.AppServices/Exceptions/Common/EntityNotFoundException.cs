@@ -9,7 +9,7 @@ namespace ClassifiedsApi.AppServices.Exceptions.Common;
 public abstract class EntityNotFoundException : ApiException
 {
     /// <summary>
-    /// Инициализирует экземпляр <see cref="EntityNotFoundException"/>.
+    /// Инициализирует экземпляр класса <see cref="EntityNotFoundException"/>.
     /// </summary>
     /// <param name="message">Сообщение об ошибке.</param>
     protected EntityNotFoundException(string message) : base(message, HttpStatusCode.NotFound)

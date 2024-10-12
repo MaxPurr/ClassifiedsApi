@@ -15,8 +15,12 @@ using ClassifiedsApi.AppServices.Contexts.Categories.Services;
 using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
+using ClassifiedsApi.AppServices.Contexts.Comments.Builders;
+using ClassifiedsApi.AppServices.Contexts.Comments.Repositories;
+using ClassifiedsApi.AppServices.Contexts.Comments.Services;
 using ClassifiedsApi.AppServices.Contexts.Files.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
+using ClassifiedsApi.AppServices.Contexts.Users.Services;
 using ClassifiedsApi.ComponentRegistrar.MapProfiles;
 using ClassifiedsApi.DataAccess.Repositories;
 using ClassifiedsApi.Infrastructure.Repository.GridFs;
@@ -38,6 +42,7 @@ public static class ComponentRegistrar
 
         services.AddScoped<ICategorySpecificationBuilder, CategorySpecificationBuilder>();
         services.AddScoped<IAdvertSpecificationBuilder, AdvertSpecificationBuilder>();
+        services.AddScoped<ICommentSpecificationBuilder, CommentSpecificationBuilder>();
         services.AddValidatorsFromAssemblyContaining<CategoryCreateValidator>(filter: filter =>
             filter.ValidatorType.GetCustomAttribute<IgnoreAutomaticRegistrationAttribute>() == null
         );
@@ -48,6 +53,7 @@ public static class ComponentRegistrar
         services.AddScoped<IAdvertRepository, AdvertRepository>();
         services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
         services.AddScoped<IAdvertImageRepository, AdvertImageRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
         
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IFileService, FileService>();
@@ -56,6 +62,12 @@ public static class ComponentRegistrar
         services.AddScoped<IAdvertService, AdvertService>();
         services.AddScoped<ICharacteristicService, CharacteristicService>();
         services.AddScoped<IAdvertImageService, AdvertImageService>();
+        services.AddScoped<ICommentService, CommentService>();
+        
+        services.AddScoped<IUserAccessVerifier, UserAccessVerifier>();
+        services.AddScoped<ICharacteristicVerifier, CharacteristicVerifier>();
+        services.AddScoped<IAdvertVerifier, AdvertVerifier>();
+        services.AddScoped<ICommentVerifier, CommentVerifier>();
         
         return services;
     }
@@ -70,6 +82,7 @@ public static class ComponentRegistrar
             cfg.AddProfile(new CategoryProfile(timeProvider));
             cfg.AddProfile(new AdvertProfile(timeProvider));
             cfg.AddProfile(new CharacteristicProfile(timeProvider));
+            cfg.AddProfile(new CommentProfile(timeProvider));
         });
         configuration.AssertConfigurationIsValid();
         return configuration;

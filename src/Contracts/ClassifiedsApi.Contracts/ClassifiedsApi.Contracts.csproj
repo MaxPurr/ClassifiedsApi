@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Contexts\Comments\" />
+      <Folder Include="Contexts\Users\" />
     </ItemGroup>
 
 </Project>

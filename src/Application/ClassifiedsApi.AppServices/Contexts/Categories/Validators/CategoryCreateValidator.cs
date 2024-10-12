@@ -17,6 +17,7 @@ public class CategoryCreateValidator : AbstractValidator<CategoryCreate>
     public CategoryCreateValidator(ICategoryRepository categoryRepository)
     {
         RuleFor(categoryCreate => categoryCreate.Name)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MinimumLength(3)
             .MaximumLength(255);

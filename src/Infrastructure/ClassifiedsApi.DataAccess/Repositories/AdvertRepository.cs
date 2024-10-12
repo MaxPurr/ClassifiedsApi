@@ -10,7 +10,6 @@ using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Advert;
 using ClassifiedsApi.AppServices.Specifications;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
-using ClassifiedsApi.Contracts.Contexts.Users;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
@@ -36,9 +35,9 @@ public class AdvertRepository : IAdvertRepository
     }
     
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(UserRequest<AdvertCreate> advertCreateRequest, CancellationToken token)
+    public async Task<Guid> CreateAsync(AdvertCreateRequest createRequest, CancellationToken token)
     {
-        var advert = _mapper.Map<Advert>(advertCreateRequest);
+        var advert = _mapper.Map<Advert>(createRequest);
         await _repository.AddAsync(advert, token);
         return advert.Id;
     }
@@ -144,8 +143,16 @@ public class AdvertRepository : IAdvertRepository
     }
     
     /// <inheritdoc />
-    public Task<bool> IsExistsAsync(Guid userId, Guid advertId, CancellationToken token)
+    public async Task<Guid> GetUserIdAsync(Guid id, CancellationToken token)
     {
-        return _repository.IsAnyExistAsync(advert => advert.Id == advertId && advert.UserId == userId, token);
+        var userId = await _repository
+            .GetByPredicate(advert => advert.Id == id)
+            .Select<Advert, Guid?>(advert => advert.UserId)
+            .FirstOrDefaultAsync(token);
+        if (!userId.HasValue)
+        {
+            throw new AdvertNotFoundException();
+        }
+        return userId.Value;
     }
 }

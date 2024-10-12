@@ -113,10 +113,6 @@ public class CategoryRepository : ICategoryRepository
         {
             category.Name = categoryUpdate.Name;
         }
-        if (categoryUpdate.UpdateParentId != null)
-        {
-            category.ParentId = categoryUpdate.UpdateParentId.ParentId;
-        }
         await _repository.UpdateAsync(category, token);
         return _mapper.Map<CategoryInfo>(category);
     }

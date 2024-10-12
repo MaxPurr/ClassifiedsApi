@@ -1,5 +1,6 @@
 using System;
 using ClassifiedsApi.AppServices.Common.Validators;
+using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
 using ClassifiedsApi.Contracts.Contexts.Categories;
 using FluentValidation;
 
@@ -13,12 +14,14 @@ public class CategoriesSearchValidator : BasePaginationValidator<CategoriesSearc
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="CategoriesSearchValidator"/>.
     /// </summary>
-    public CategoriesSearchValidator()
+    /// <param name="categoryRepository">Репозиторий категорий <see cref="ICategoryRepository"/>.</param>
+    public CategoriesSearchValidator(ICategoryRepository categoryRepository)
     {
         When(search => search.FilterByParentId != null, () =>
         {
             RuleFor(search => search.FilterByParentId!.ParentId)
                 .NotEqual(Guid.Empty)
+                .SetValidator(new CategoryExistsValidator(categoryRepository))
                 .WithName("Parent Id");
         });
         

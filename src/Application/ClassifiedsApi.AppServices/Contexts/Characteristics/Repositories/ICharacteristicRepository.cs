@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ClassifiedsApi.Contracts.Contexts.Adverts;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
 
 namespace ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
@@ -14,10 +13,10 @@ public interface ICharacteristicRepository
     /// <summary>
     /// Метод для добавления новой характеристики объявления.
     /// </summary>
-    /// <param name="characteristicAddRequest">Модель пользовательского запроса на добавление характеристики объявления.</param>
+    /// <param name="addRequest">Запрос на добавление характеристики объявления <see cref="CharacteristicAddRequest"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Идентификатор характеристики.</returns>
-    Task<Guid> AddAsync(AdvertRequest<CharacteristicAdd> characteristicAddRequest, CancellationToken token);
+    Task<Guid> AddAsync(CharacteristicAddRequest addRequest, CancellationToken token);
 
     /// <summary>
     /// Метод для удаления характеристики объявления.
