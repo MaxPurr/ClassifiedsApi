@@ -25,8 +25,6 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
         _dbSet = _dbContext.Set<TEntity>();
     }
 
-    public DbContext Context => _dbContext;
-
     /// <inheritdoc />
     public IQueryable<TEntity> GetAll()
     {
@@ -70,6 +68,12 @@ public class SqlRepository<TEntity, TContext> : ISqlRepository<TEntity, TContext
         _dbSet.Remove(entity);
         await _dbContext.SaveChangesAsync(token);
         return true;;
+    }
+    
+    /// <inheritdoc />
+    public Task DeleteByPredicateAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token)
+    {
+        return GetByPredicate(predicate).ExecuteDeleteAsync(token);
     }
 
     /// <inheritdoc />

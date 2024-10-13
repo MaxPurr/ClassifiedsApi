@@ -7,5 +7,8 @@ namespace ClassifiedsApi.Contracts.Common.Errors;
 /// </summary>
 public class ValidationApiError : ApiError
 {
+    /// <summary>
+    /// Список ошибок.
+    /// </summary>
     public required IEnumerable<string> Failures { get; set; }
 }

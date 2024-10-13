@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ClassifiedsApi.Infrastructure.Repository.Sql;
 
@@ -16,8 +17,6 @@ public interface ISqlRepository<TEntity, TContext>
     where TEntity : class
     where TContext : DbContext
 {
-    DbContext Context { get; }
-    
     /// <summary>
     /// Метод для получения всех сущностей.
     /// </summary>
@@ -62,6 +61,14 @@ public interface ISqlRepository<TEntity, TContext>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns><code data-dev-comment-type="langword">true</code> если сущность найдена и удалена, иначе <code data-dev-comment-type="langword">false</code>.</returns>
     Task<bool> DeleteFirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для удаления сущностей, удовлетворяющих условию
+    /// </summary>
+    /// <param name="predicate">Условие.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task DeleteByPredicateAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken token);
     
     /// <summary>
     /// Метод для проверки существования сущности в репозитории по заданному условию.

@@ -6,17 +6,22 @@ namespace ClassifiedsApi.Contracts.Contexts.Files;
 public class FileUpload
 {
     /// <summary>
-    /// Название.
+    /// Имя.
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// Поток для чтения файла.
+    /// Контент.
     /// </summary>
-    public required Stream ReadStream { get; set; }
+    public required byte[] Content { get; set; }
 
     /// <summary>
     /// Тип контента.
     /// </summary>
     public required string ContentType { get; set; }
+    
+    /// <summary>
+    /// Размер.
+    /// </summary>
+    public required long Length { get; set; }
 }   

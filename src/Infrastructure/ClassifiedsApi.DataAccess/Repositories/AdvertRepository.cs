@@ -28,7 +28,9 @@ public class AdvertRepository : IAdvertRepository
     /// </summary>
     /// <param name="repository">Глуппый репозиторий <see cref="ISqlRepository{TEntity, TContext}"/>.</param>
     /// <param name="mapper">Маппер.</param>
-    public AdvertRepository(ISqlRepository<Advert, ApplicationDbContext> repository, IMapper mapper)
+    public AdvertRepository(
+        ISqlRepository<Advert, ApplicationDbContext> repository, 
+        IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
@@ -95,7 +97,7 @@ public class AdvertRepository : IAdvertRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertInfo> UpdateAsync(Guid id, AdvertUpdate advertUpdate, CancellationToken token)
+    public async Task<UpdatedAdvertInfo> UpdateAsync(Guid id, AdvertUpdate advertUpdate, CancellationToken token)
     {
         var advert = await _repository.FirstOrDefaultAsync(advert => advert.Id == id, token);
         if (advert == null)
@@ -123,12 +125,12 @@ public class AdvertRepository : IAdvertRepository
             advert.Disabled = advertUpdate.Disabled.Value;
         }
         await _repository.UpdateAsync(advert, token);
-        return _mapper.Map<AdvertInfo>(advert);
+        return _mapper.Map<UpdatedAdvertInfo>(advert);
     }
     
     /// <inheritdoc />
     public async Task DeleteAsync(Guid id, CancellationToken token)
-    { 
+    {
         var success = await _repository.DeleteFirstAsync(advert => advert.Id == id, token);
         if (!success)
         {

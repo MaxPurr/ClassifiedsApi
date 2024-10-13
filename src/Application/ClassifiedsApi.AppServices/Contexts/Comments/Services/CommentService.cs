@@ -62,12 +62,13 @@ public class CommentService : ICommentService
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(Guid userId, Guid advertId, CommentCreate commentCreate, CancellationToken token)
     {
-        _createValidator.ValidateAndThrow(commentCreate);
         await _advertVerifier.VerifyExistsAndThrowAsync(advertId, token);
+        _createValidator.ValidateAndThrow(commentCreate);
         if (commentCreate.ParentId.HasValue)
         {
             await _commentVerifier.VerifyExistsAndThrowAsync(advertId, commentCreate.ParentId.Value, token);
         }
+        
         var createRequest = new CommentCreateRequest
         {
             UserId = userId,
@@ -88,6 +89,11 @@ public class CommentService : ICommentService
     {
         await _advertVerifier.VerifyExistsAndThrowAsync(advertId, token);
         _searchValidator.ValidateAndThrow(search);
+        if (search.FilterByParentId != null && search.FilterByParentId.ParentId.HasValue)
+        {
+            await _commentVerifier.VerifyExistsAndThrowAsync(advertId, search.FilterByParentId.ParentId.Value, token);
+        }
+        
         var specification = _specificationBuilder.Build(advertId, search);
         var comments = await _repository.GetBySpecificationWithPaginationAsync(
             specification: specification,
@@ -103,6 +109,7 @@ public class CommentService : ICommentService
     {
         await _userAccessVerifier.VerifyCommentAccessAndThrowAsync(userId, commentId, token);
         await _commentVerifier.VerifyIsNotDeletedAndThrowAsync(commentId, token);
+       
         var deletedAt = _timeProvider.GetUtcNow().UtcDateTime;
         await _repository.DeleteAsync(commentId, deletedAt, token);
     }
@@ -113,6 +120,7 @@ public class CommentService : ICommentService
         await _userAccessVerifier.VerifyCommentAccessAndThrowAsync(userId, commentId, token);
         await _commentVerifier.VerifyIsNotDeletedAndThrowAsync(commentId, token);
         _updateValidator.ValidateAndThrow(commentUpdate);
+       
         var updatedAt = _timeProvider.GetUtcNow().UtcDateTime;
         var updatedComment = await _repository.UpdateAsync(commentId, commentUpdate, updatedAt, token);
         return updatedComment;

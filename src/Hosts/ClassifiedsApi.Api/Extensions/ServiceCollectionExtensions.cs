@@ -8,11 +8,8 @@ using ClassifiedsApi.Contracts.Contexts.Adverts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ClassifiedsApi.Api.Extensions;
@@ -113,22 +110,5 @@ public static class ServiceCollectionExtensions
                 new string[]{}
             }
         });
-    }
-    
-    /// <summary>
-    /// Добавляет GridFS в колекцию служб.
-    /// </summary>
-    /// <param name="services">Коллекция служб <see cref="IServiceCollection"/>.</param>
-    /// <returns>Коллекция служб <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddGridFsBucket(this IServiceCollection services)
-    {
-        services.AddSingleton<IGridFSBucket>(provider =>
-        {
-            var mongoDbSettings = provider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-            var database = mongoClient.GetDatabase(mongoDbSettings.DatabaseName);
-            return new GridFSBucket(database);
-        });
-        return services;
     }
 }

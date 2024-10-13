@@ -16,7 +16,7 @@ namespace ClassifiedsApi.DataAccess.Repositories;
 public class AdvertImageRepository : IAdvertImageRepository
 {
     private readonly ISqlRepository<AdvertImage, ApplicationDbContext> _repository;
-    
+
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="AdvertImageRepository"/>.
     /// </summary>
@@ -27,21 +27,21 @@ public class AdvertImageRepository : IAdvertImageRepository
     }
     
     /// <inheritdoc />
-    public Task AddAsync(Guid advertId, string imageId, CancellationToken token)
+    public async Task AddAsync(Guid advertId, Guid imageId, CancellationToken token)
     {
         var advertImage = new AdvertImage
         {
-            ImageId = imageId,
             AdvertId = advertId,
+            ImageId = imageId
         };
-        return _repository.AddAsync(advertImage, token);
+        await _repository.AddAsync(advertImage, token);
     }
     
     /// <inheritdoc />
-    public async Task DeleteAsync(Guid advertId, string imageId, CancellationToken token)
+    public async Task DeleteAsync(Guid advertId, Guid imageId, CancellationToken token)
     {
         var success = await _repository.DeleteFirstAsync(advertImage => 
-            advertImage.AdvertId == advertId &&
+            advertImage.AdvertId == advertId && 
             advertImage.ImageId == imageId, 
             token);
         if (!success)
@@ -49,14 +49,22 @@ public class AdvertImageRepository : IAdvertImageRepository
             throw new AdvertImageNotFoundException();
         }
     }
-    
+
     /// <inheritdoc />
-    public async Task<IReadOnlyCollection<string>> GetAllAsync(Guid advertId, CancellationToken token)
+    public async Task<IReadOnlyCollection<Guid>> GetByAdvertIdAsync(Guid advertId, CancellationToken token)
     {
         var ids = await _repository
             .GetByPredicate(advertImage => advertImage.AdvertId == advertId)
             .Select(advertImage => advertImage.ImageId)
             .ToArrayAsync(token);
+        return ids;
+    }
+    
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<Guid>> DeleteByAdvertIdAsync(Guid advertId, CancellationToken token)
+    {
+        var ids = await GetByAdvertIdAsync(advertId, token);
+        await _repository.DeleteByPredicateAsync(advertImage => advertImage.AdvertId == advertId, token);
         return ids;
     }
 }

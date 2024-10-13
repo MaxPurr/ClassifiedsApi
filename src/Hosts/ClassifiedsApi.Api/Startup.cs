@@ -1,6 +1,5 @@
 using ClassifiedsApi.Api.Extensions;
 using ClassifiedsApi.Api.Middlewares;
-using ClassifiedsApi.Api.Settings;
 using ClassifiedsApi.AppServices.Settings;
 using ClassifiedsApi.ComponentRegistrar;
 using ClassifiedsApi.DataAccess.DbContexts;
@@ -34,9 +33,7 @@ public class Startup {
             var connectionString = _configuration.GetConnectionString("ApplicationDbConnectionString");
             options.UseNpgsql(connectionString);
         });
-        services.Configure<MongoDbSettings>(_configuration.GetSection(nameof(MongoDbSettings)));
         services.Configure<JwtSettings>(_configuration.GetSection(nameof(JwtSettings)));
-        services.AddGridFsBucket();
         services.AddApplicationServices();
     }
 
