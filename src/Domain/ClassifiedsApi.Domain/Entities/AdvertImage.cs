@@ -10,7 +10,7 @@ public class AdvertImage
     /// <summary>
     /// Идентификатор фотографии.
     /// </summary>
-    public string ImageId { get; set; } = "";
+    public Guid ImageId { get; set; }
     
     /// <summary>
     /// Идентификатор объявления.

@@ -35,7 +35,7 @@ public class AdvertInfo
     /// <summary>
     /// Идентификаторы фотографий.
     /// </summary>
-    public ICollection<string> ImageIds { get; set; } = null!;
+    public ICollection<Guid> ImageIds { get; set; } = null!;
     
     /// <summary>
     /// Неактивное объявление.

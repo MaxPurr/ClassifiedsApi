@@ -6,7 +6,9 @@ namespace ClassifiedsApi.Domain.Base;
 /// Базовый класс для всех сущностей.
 /// </summary>
 public abstract class BaseEntity {
+    /// <summary>
     /// Идентификатор.
+    /// </summary>
     public Guid Id { get; set; }
     
     /// <summary>

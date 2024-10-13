@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.AppServices.Common.Services;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Builders;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
@@ -11,13 +12,14 @@ using FluentValidation;
 
 namespace ClassifiedsApi.AppServices.Contexts.Adverts.Services;
 
-/// <inheritdoc />
-public class AdvertService : IAdvertService
+/// <inheritdoc cref="IAdvertService"/>
+public class AdvertService : ServiceBase, IAdvertService
 {
     private readonly IAdvertRepository _repository;
     private readonly IAdvertImageService _advertImageService;
     private readonly IAdvertSpecificationBuilder _specificationBuilder;
     private readonly IUserAccessVerifier _userAccessVerifier;
+    private readonly IUserVerifier _userVerifier;
     
     private readonly IValidator<AdvertCreate> _advertCreateValidator;
     private readonly IValidator<AdvertUpdate> _advertUpdateValidator;
@@ -30,6 +32,7 @@ public class AdvertService : IAdvertService
     /// <param name="advertImageService">Сервис фотографий объявлений <see cref="IAdvertImageService"/>.</param>
     /// <param name="specificationBuilder">Строитель спецификаций для объявлений <see cref="IAdvertSpecificationBuilder"/>.</param>
     /// <param name="userAccessVerifier">Верификатор прав пользователя <see cref="IUserAccessVerifier"/>.</param>
+    /// <param name="userVerifier">Верификатор пользователей <see cref="IUserVerifier"/>.</param>
     /// <param name="advertCreateValidator">Валидатор модели создания объявления.</param>
     /// <param name="advertUpdateValidator">Валидатор модели обновления объявления.</param>
     /// <param name="advertsSearchValidator">Валидатор модели поиска объявлений.</param>
@@ -38,6 +41,7 @@ public class AdvertService : IAdvertService
         IAdvertImageService advertImageService,
         IAdvertSpecificationBuilder specificationBuilder,
         IUserAccessVerifier userAccessVerifier,
+        IUserVerifier userVerifier,
         IValidator<AdvertCreate> advertCreateValidator,
         IValidator<AdvertUpdate> advertUpdateValidator,
         IValidator<AdvertsSearch> advertsSearchValidator)
@@ -47,6 +51,7 @@ public class AdvertService : IAdvertService
         _advertCreateValidator = advertCreateValidator;
         _advertUpdateValidator = advertUpdateValidator;
         _advertsSearchValidator = advertsSearchValidator;
+        _userVerifier = userVerifier;
         _userAccessVerifier = userAccessVerifier;
         _advertImageService = advertImageService;
     }
@@ -55,6 +60,7 @@ public class AdvertService : IAdvertService
     public async Task<Guid> CreateAsync(Guid userId, AdvertCreate advertCreate, CancellationToken token)
     {
         await _advertCreateValidator.ValidateAndThrowAsync(advertCreate, token);
+        
         var createRequest = new AdvertCreateRequest
         {
             UserId = userId,
@@ -73,21 +79,42 @@ public class AdvertService : IAdvertService
     public async Task<IReadOnlyCollection<ShortAdvertInfo>> SearchAsync(AdvertsSearch search, CancellationToken token)
     { 
         await _advertsSearchValidator.ValidateAndThrowAsync(search, token);
+        
         var specification = _specificationBuilder.Build(search);
         var adverts = await _repository.GetBySpecificationWithPaginationAsync(
             specification: specification, 
             skip: search.Skip, 
-            take: search.Take.GetValueOrDefault(0), 
+            take: search.Take.GetValueOrDefault(), 
+            order: search.Order!, 
+            token: token);
+        return adverts;
+    }
+    
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<ShortAdvertInfo>> GetByUserIdAsync(
+        Guid userId, 
+        AdvertsSearch search, 
+        CancellationToken token)
+    {
+        await _userVerifier.VerifyExistsAndThrowAsync(userId, token);
+        await _advertsSearchValidator.ValidateAndThrowAsync(search, token);
+        
+        var specification = _specificationBuilder.Build(userId, search);
+        var adverts = await _repository.GetBySpecificationWithPaginationAsync(
+            specification: specification, 
+            skip: search.Skip, 
+            take: search.Take.GetValueOrDefault(), 
             order: search.Order!, 
             token: token);
         return adverts;
     }
 
     /// <inheritdoc />
-    public async Task<AdvertInfo> UpdateAsync(Guid userId, Guid advertId, AdvertUpdate advertUpdate, CancellationToken token)
+    public async Task<UpdatedAdvertInfo> UpdateAsync(Guid userId, Guid advertId, AdvertUpdate advertUpdate, CancellationToken token)
     {
         await _userAccessVerifier.VerifyAdvertAccessAndThrowAsync(userId, advertId, token);
         await _advertUpdateValidator.ValidateAndThrowAsync(advertUpdate, token);
+        
         return await _repository.UpdateAsync(advertId, advertUpdate, token);
     }
 
@@ -95,7 +122,10 @@ public class AdvertService : IAdvertService
     public async Task DeleteAsync(Guid userId, Guid advertId, CancellationToken token)
     {
         await _userAccessVerifier.VerifyAdvertAccessAndThrowAsync(userId, advertId, token);
-        await _advertImageService.DeleteAllAsync(advertId, token);
+        
+        using var scope = CreateTransactionScope();
+        await _advertImageService.DeleteByAdvertIdAsync(advertId, token);
         await _repository.DeleteAsync(advertId, token);
+        scope.Complete();
     }
 }

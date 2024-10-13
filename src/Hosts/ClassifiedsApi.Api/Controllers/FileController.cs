@@ -1,4 +1,4 @@
-using System.Net;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
@@ -13,7 +13,7 @@ namespace ClassifiedsApi.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class FileController : ControllerBase
 {
     private readonly IFileService _service;
@@ -33,10 +33,10 @@ public class FileController : ControllerBase
     /// <param name="id">Идентификатор файла.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns>Модель информации о файле.</returns>
-    [HttpGet("{id}/info")]
+    [HttpGet("{id:guid}/info")]
     [ProducesResponseType(typeof(FileInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetInfoAsync([FromRoute] string id, CancellationToken token)
+    public async Task<IActionResult> GetInfoAsync([FromRoute] Guid id, CancellationToken token)
     {
         var fileInfo = await _service.GetInfoAsync(id, token);
         return Ok(fileInfo);
@@ -48,13 +48,13 @@ public class FileController : ControllerBase
     /// <param name="id">Идентификатор файла.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(FileInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DownloadAsync([FromRoute] string id, CancellationToken token)
+    public async Task<IActionResult> DownloadAsync([FromRoute] Guid id, CancellationToken token)
     {
         var fileDownload = await _service.DownloadAsync(id, token);
         Response.ContentType = fileDownload.ContentType;
-        return File(fileDownload.ReadStream, fileDownload.ContentType, fileDownload.Name);
+        return File(fileDownload.Content, fileDownload.ContentType, fileDownload.Name);
     }
 }

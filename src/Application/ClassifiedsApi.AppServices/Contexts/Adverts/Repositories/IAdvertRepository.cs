@@ -50,8 +50,8 @@ public interface IAdvertRepository
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="advertUpdate">Модель обновления объявления <see cref="AdvertUpdate"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
-    /// <returns>Модель обновленной информации об объявлении <see cref="AdvertInfo"/>.</returns>
-    Task<AdvertInfo> UpdateAsync(Guid id, AdvertUpdate advertUpdate, CancellationToken token);
+    /// <returns>Модель обновленной информации об объявлении <see cref="UpdatedAdvertInfo"/>.</returns>
+    Task<UpdatedAdvertInfo> UpdateAsync(Guid id, AdvertUpdate advertUpdate, CancellationToken token);
     
     /// <summary>
     /// Метод для удаления объявления.

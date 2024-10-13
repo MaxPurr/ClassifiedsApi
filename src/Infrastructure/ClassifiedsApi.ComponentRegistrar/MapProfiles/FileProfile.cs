@@ -1,25 +1,20 @@
-using System.IO;
+using System;
 using AutoMapper;
 using ClassifiedsApi.Contracts.Contexts.Files;
-using ClassifiedsApi.DataAccess.Helpers;
-using MongoDB.Bson;
-using MongoDB.Driver.GridFS;
-using FileInfo = ClassifiedsApi.Contracts.Contexts.Files.FileInfo;
+using ClassifiedsApi.Domain.Entities;
 
 namespace ClassifiedsApi.ComponentRegistrar.MapProfiles;
 
 public class FileProfile : Profile
 {
-    public FileProfile()
+    public FileProfile(TimeProvider timeProvider)
     {
-        CreateMap<GridFSFileInfo, FileInfo>(MemberList.Destination)
-            .ForMember(info => info.Id, map => map.MapFrom(info => MongoDbHelper.ParseStringFromObjectId(info.Id)))
-            .ForMember(info => info.CreatedAt, map => map.MapFrom(info => info.UploadDateTime))
-            .ForMember(info => info.Name, map => map.MapFrom(info => info.Filename));
+        CreateMap<FileUpload, File>(MemberList.None)
+            .ForMember(file => file.Id, map => map.MapFrom(_ => Guid.NewGuid()))
+            .ForMember(file => file.CreatedAt, map => map.MapFrom(_ => timeProvider.GetUtcNow().UtcDateTime));
         
-        CreateMap<GridFSDownloadStream<ObjectId>, FileDownload>()
-            .ForMember(download => download.Name, map => map.MapFrom(download => download.FileInfo.Filename))
-            .ForMember(download => download.ReadStream, map => map.MapFrom(download => (Stream)download))
-            .ForMember(download => download.ContentType, map => map.MapFrom(download => download.FileInfo.Metadata["content-type"].AsString));
+        CreateMap<File, FileInfo>(MemberList.Destination);
+
+        CreateMap<File, FileDownload>(MemberList.Destination);
     }
 }

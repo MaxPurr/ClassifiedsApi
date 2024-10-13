@@ -18,7 +18,7 @@ public interface IAdvertImageService
     /// <param name="imageUpload">Модель загрузки файла на сервер <see cref="FileUpload"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Идентификатор добавленной фотографии.</returns>
-    Task<string> UploadAsync(Guid userId, Guid advertId, FileUpload imageUpload, CancellationToken token);
+    Task<Guid> UploadAsync(Guid userId, Guid advertId, FileUpload imageUpload, CancellationToken token);
     
     /// <summary>
     /// Метод для удаления фотографии объявления.
@@ -28,13 +28,13 @@ public interface IAdvertImageService
     /// <param name="imageId">Идентификатор фотографии.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
-    Task DeleteAsync(Guid userId, Guid advertId, string imageId, CancellationToken token);
+    Task DeleteAsync(Guid userId, Guid advertId, Guid imageId, CancellationToken token);
     
     /// <summary>
-    /// Метод для удалений всех фотографий объявления.
+    /// Метод для удаления всех фотографий объявления.
     /// </summary>
     /// <param name="advertId">Идентификатор объявления.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
-    Task DeleteAllAsync(Guid advertId, CancellationToken token);
+    Task DeleteByAdvertIdAsync(Guid advertId, CancellationToken token);
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using ClassifiedsApi.Api.Helpers;
 using ClassifiedsApi.Contracts.Contexts.Files;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,21 @@ public abstract class BaseApplicationController : ControllerBase
     }
     
     /// <summary>
+    /// Аутентифицирован ли пользователь.
+    /// </summary>
+    protected bool IsUserAuthenticated
+    {
+        get
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var user = httpContext?.User;
+            return user != null && 
+                   user.Identity != null && 
+                   user.Identity.IsAuthenticated;
+        }
+    }
+    
+    /// <summary>
     /// Метод для получения модели загрузки файла на сервер.
     /// </summary>
     /// <param name="file">Файл.</param>
@@ -55,7 +71,8 @@ public abstract class BaseApplicationController : ControllerBase
         {
             Name = file.FileName,
             ContentType = file.ContentType,
-            ReadStream = file.OpenReadStream()
+            Content = FileHelper.GetByteArray(file),
+            Length = file.Length
         };
     }
 }

@@ -36,5 +36,7 @@ public class AdvertProfile : Profile
         
         CreateMap<Advert, ShortAdvertInfo>(MemberList.None)
             .ForMember(info => info.ImageIds, map => map.MapFrom(advert => advert.Images.Select(advertImage => advertImage.ImageId)));
+
+        CreateMap<Advert, UpdatedAdvertInfo>(MemberList.Destination);
     }
 }

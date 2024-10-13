@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.Api.Controllers.Base;
@@ -23,7 +22,7 @@ namespace ClassifiedsApi.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class AdvertController : BaseApplicationController
 {
     private readonly IAdvertService _advertService;
@@ -109,15 +108,15 @@ public class AdvertController : BaseApplicationController
     /// <returns>Модель обновленной информации об объявлении.</returns>
     [HttpPatch("{id:guid}")]
     [Authorize]
-    [ProducesResponseType(typeof(AdvertInfo), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdatedAdvertInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] AdvertUpdate advertUpdate, CancellationToken token)
     {
-        var advertInfo = await _advertService.UpdateAsync(CurrentUserId, id, advertUpdate, token);
-        return Ok(advertInfo);
+        var updatedInfo = await _advertService.UpdateAsync(CurrentUserId, id, advertUpdate, token);
+        return Ok(updatedInfo);
     }
     
     /// <summary>
@@ -213,7 +212,7 @@ public class AdvertController : BaseApplicationController
     /// <returns>Идентификатор добавленной фотографии.</returns>
     [HttpPost("{id:guid}/images")]
     [Authorize]
-    [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationApiError), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -234,7 +233,7 @@ public class AdvertController : BaseApplicationController
     /// <param name="imageId">Идентификатор фотографии.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns></returns>
-    [HttpDelete("{id:guid}/images/{imageId}")]
+    [HttpDelete("{id:guid}/images/{imageId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
@@ -242,7 +241,7 @@ public class AdvertController : BaseApplicationController
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteImageAsync(
         [FromRoute] Guid id,
-        [FromRoute] string imageId,
+        [FromRoute] Guid imageId,
         CancellationToken token)
     {
         await _advertImageService.DeleteAsync(CurrentUserId, id, imageId, token);

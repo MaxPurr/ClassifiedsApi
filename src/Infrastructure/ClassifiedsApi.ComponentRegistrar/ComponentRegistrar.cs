@@ -20,10 +20,10 @@ using ClassifiedsApi.AppServices.Contexts.Comments.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Comments.Services;
 using ClassifiedsApi.AppServices.Contexts.Files.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
+using ClassifiedsApi.AppServices.Contexts.Users.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Users.Services;
 using ClassifiedsApi.ComponentRegistrar.MapProfiles;
 using ClassifiedsApi.DataAccess.Repositories;
-using ClassifiedsApi.Infrastructure.Repository.GridFs;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +35,6 @@ public static class ComponentRegistrar
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(ISqlRepository<,>), typeof(SqlRepository<,>));
-        services.AddScoped<IGridFsRepository, GridFsRepository>();
         services.AddSingleton(TimeProvider.System);
         
         services.AddSingleton<IMapper>(provider => new Mapper(GetMapperConfiguration(provider)));
@@ -54,6 +53,7 @@ public static class ComponentRegistrar
         services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
         services.AddScoped<IAdvertImageRepository, AdvertImageRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IFileService, FileService>();
@@ -63,11 +63,14 @@ public static class ComponentRegistrar
         services.AddScoped<ICharacteristicService, CharacteristicService>();
         services.AddScoped<IAdvertImageService, AdvertImageService>();
         services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<IUserService, UserService>();
         
         services.AddScoped<IUserAccessVerifier, UserAccessVerifier>();
         services.AddScoped<ICharacteristicVerifier, CharacteristicVerifier>();
         services.AddScoped<IAdvertVerifier, AdvertVerifier>();
         services.AddScoped<ICommentVerifier, CommentVerifier>();
+        services.AddScoped<IFileVerifier, FileVerifier>();
+        services.AddScoped<IUserVerifier, UserVerifier>();
         
         return services;
     }
@@ -77,12 +80,13 @@ public static class ComponentRegistrar
         var timeProvider = serviceProvider.GetRequiredService<TimeProvider>();
         var configuration = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<FileProfile>();
             cfg.AddProfile(new AccountProfile(timeProvider));
             cfg.AddProfile(new CategoryProfile(timeProvider));
             cfg.AddProfile(new AdvertProfile(timeProvider));
             cfg.AddProfile(new CharacteristicProfile(timeProvider));
             cfg.AddProfile(new CommentProfile(timeProvider));
+            cfg.AddProfile(new FileProfile(timeProvider));
+            cfg.AddProfile<UserProfile>();
         });
         configuration.AssertConfigurationIsValid();
         return configuration;

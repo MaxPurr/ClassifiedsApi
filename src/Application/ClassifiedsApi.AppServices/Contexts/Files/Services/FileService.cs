@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Files.Repositories;
@@ -20,25 +21,25 @@ public class FileService : IFileService
     }
     
     /// <inheritdoc/>
-    public Task<string> UploadAsync(FileUpload fileUpload, CancellationToken token)
+    public Task<Guid> UploadAsync(FileUpload fileUpload, CancellationToken token)
     {
         return _repository.UploadAsync(fileUpload, token);
     }
     
     /// <inheritdoc/>
-    public Task<FileInfo> GetInfoAsync(string id, CancellationToken token)
+    public Task<FileInfo> GetInfoAsync(Guid id, CancellationToken token)
     {
         return _repository.GetInfoAsync(id, token);
     }
     
     /// <inheritdoc/>
-    public Task<FileDownload> DownloadAsync(string id, CancellationToken token)
+    public Task<FileDownload> DownloadAsync(Guid id, CancellationToken token)
     {
         return _repository.DownloadAsync(id, token);
     }
     
     /// <inheritdoc/>
-    public Task DeleteAsync(string id, CancellationToken token)
+    public Task DeleteAsync(Guid id, CancellationToken token)
     {
         return _repository.DeleteAsync(id, token);
     }

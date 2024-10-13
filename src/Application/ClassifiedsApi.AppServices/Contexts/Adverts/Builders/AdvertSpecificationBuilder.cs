@@ -1,5 +1,7 @@
+using System;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Specifications;
 using ClassifiedsApi.AppServices.Specifications;
+using ClassifiedsApi.AppServices.Specifications.Extensions;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 
 namespace ClassifiedsApi.AppServices.Contexts.Adverts.Builders;
@@ -33,5 +35,11 @@ public class AdvertSpecificationBuilder : IAdvertSpecificationBuilder
             specification &= new ByCategoryIdSpecification(search.FilterByCategoryId.GetValueOrDefault());
         }
         return specification;
+    }
+    
+    ///<inheritdoc />
+    public ISpecification<ShortAdvertInfo> Build(Guid userId, AdvertsSearch search)
+    {
+        return Build(search).And(new ByUserIdSpecification(userId));
     }
 }

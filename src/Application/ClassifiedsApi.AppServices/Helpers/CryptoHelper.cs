@@ -5,8 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ClassifiedsApi.AppServices.Helpers;
 
+/// <summary>
+/// Класс-помощник для работы с криптографией.
+/// </summary>
 public static class CryptoHelper
 {
+    /// <summary>
+    /// Конвертирует строку в Base64.
+    /// </summary>
+    /// <param name="str">Строка.</param>
+    /// <returns>Base64</returns>
     public static string GetBase64Hash(string str)
     {
         byte[] buffer = Encoding.UTF8.GetBytes(str);

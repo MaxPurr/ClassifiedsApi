@@ -35,7 +35,16 @@ public interface IAdvertService
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Коллекция объявлений, удовлетворяющих запросу.</returns>
     Task<IReadOnlyCollection<ShortAdvertInfo>> SearchAsync(AdvertsSearch search, CancellationToken token);
-
+    
+    /// <summary>
+    /// Метод для получения объявления пользователя.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="search">Модель поиска объявлений <see cref="AdvertsSearch"/>.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Коллекция объявлений пользователя.</returns>
+    Task<IReadOnlyCollection<ShortAdvertInfo>> GetByUserIdAsync(Guid userId, AdvertsSearch search, CancellationToken token);
+    
     /// <summary>
     /// Метод для обновления объявления.
     /// </summary>
@@ -43,8 +52,8 @@ public interface IAdvertService
     /// <param name="advertId">Идентификатор объявления.</param>
     /// <param name="advertUpdate">Модель обновления объявления <see cref="AdvertUpdate"/>.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
-    /// <returns>Модель обновленной информации об объявлении <see cref="AdvertInfo"/>.</returns>
-    Task<AdvertInfo> UpdateAsync(Guid userId, Guid advertId, AdvertUpdate advertUpdate, CancellationToken token);
+    /// <returns>Модель обновленной информации об объявлении <see cref="UpdatedAdvertInfo"/>.</returns>
+    Task<UpdatedAdvertInfo> UpdateAsync(Guid userId, Guid advertId, AdvertUpdate advertUpdate, CancellationToken token);
     
     /// <summary>
     /// Метод для удаления объявления.

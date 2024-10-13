@@ -6,14 +6,14 @@ namespace ClassifiedsApi.Contracts.Contexts.Files;
 public class FileDownload
 {
     /// <summary>
-    /// Название.
+    /// Имя.
     /// </summary>
     public string Name { get; set; } = "";
     
     /// <summary>
-    /// Поток для чтения файла.
+    /// Контент.
     /// </summary>
-    public Stream ReadStream { get; set; } = null!;
+    public byte[] Content { get; set; } = null!;
     
     /// <summary>
     /// Тип контента.
