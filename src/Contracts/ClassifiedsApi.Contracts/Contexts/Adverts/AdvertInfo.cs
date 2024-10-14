@@ -25,7 +25,7 @@ public class AdvertInfo
     /// <summary>
     /// Характеристики.
     /// </summary>
-    public ICollection<CharacteristicInfo> Characteristics { get; set; } = null!;
+    public IReadOnlyCollection<CharacteristicInfo> Characteristics { get; set; } = null!;
     
     /// <summary>
     /// Цена.
@@ -35,7 +35,7 @@ public class AdvertInfo
     /// <summary>
     /// Идентификаторы фотографий.
     /// </summary>
-    public ICollection<Guid> ImageIds { get; set; } = null!;
+    public IReadOnlyCollection<Guid> ImageIds { get; set; } = null!;
     
     /// <summary>
     /// Неактивное объявление.

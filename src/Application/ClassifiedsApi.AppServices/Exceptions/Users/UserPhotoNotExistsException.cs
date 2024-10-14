@@ -5,7 +5,7 @@ using ClassifiedsApi.Contracts.Common.Errors;
 namespace ClassifiedsApi.AppServices.Exceptions.Users;
 
 /// <summary>
-/// Исключение, возникающее когда у пользователя нет фотографии.
+/// Исключение, возникающее при попытки обращения к несуществующей фотографии пользователя.
 /// </summary>
 public class UserPhotoNotExistsException : ApiException
 {

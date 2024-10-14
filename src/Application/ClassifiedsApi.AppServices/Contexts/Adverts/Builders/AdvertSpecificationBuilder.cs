@@ -14,10 +14,6 @@ public class AdvertSpecificationBuilder : IAdvertSpecificationBuilder
     {
         var specification = Specification<ShortAdvertInfo>.FromPredicate(advert =>
             search.IncludeDisabled.GetValueOrDefault(false) || !advert.Disabled);
-        if (search.ExcludeWithoutImages.GetValueOrDefault(false))
-        {
-            specification &= new ExcludeWithoutImagesSpecification();
-        }
         if (search.MinPrice.HasValue)
         {
             specification &= new MinPriceSpecification(search.MinPrice.Value);

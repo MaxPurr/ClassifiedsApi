@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Characteristics;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApi.DataAccess.Repositories;
 
@@ -50,7 +53,19 @@ public class CharacteristicRepository : ICharacteristicRepository
     }
 
     /// <inheritdoc />
-    public async Task<CharacteristicInfo> UpdateAsync(Guid advertId, Guid id, CharacteristicUpdate characteristicUpdate, CancellationToken token)
+    public Task DeleteByAdvertIdAsync(Guid advertId, CancellationToken token)
+    {
+        return _repository.DeleteByPredicateAsync(
+            characteristic => characteristic.AdvertId == advertId, 
+            token);
+    }
+
+    /// <inheritdoc />
+    public async Task<CharacteristicInfo> UpdateAsync(
+        Guid advertId, 
+        Guid id, 
+        CharacteristicUpdate characteristicUpdate,
+        CancellationToken token)
     {
         var characteristic = await _repository.FirstOrDefaultAsync(characteristic => 
             characteristic.AdvertId == advertId &&
@@ -70,6 +85,16 @@ public class CharacteristicRepository : ICharacteristicRepository
         }
         await _repository.UpdateAsync(characteristic, token);
         return _mapper.Map<CharacteristicInfo>(characteristic);
+    }
+    
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<CharacteristicInfo>> GetByAdvertIdAsync(Guid advertId, CancellationToken token)
+    {
+        var characteristics = await _repository
+            .GetByPredicate(characteristic => characteristic.AdvertId == advertId)
+            .ProjectTo<CharacteristicInfo>(_mapper.ConfigurationProvider)
+            .ToArrayAsync(token);
+        return characteristics;
     }
 
     /// <inheritdoc />

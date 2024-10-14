@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
@@ -45,4 +46,20 @@ public interface ICharacteristicService
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task DeleteAsync(Guid userId, Guid advertId, Guid characteristicId, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для удаления всех характеристик объявления.
+    /// </summary>
+    /// <param name="advertId">Идентификатор объявления.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task DeleteByAdvertIdAsync(Guid advertId, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для получения всех характеристик объявления.
+    /// </summary>
+    /// <param name="advertId">Идентификатор объявления.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Список характеристик.</returns>
+    Task<IReadOnlyCollection<CharacteristicInfo>> GetByAdvertIdAsync(Guid advertId, CancellationToken token);
 }

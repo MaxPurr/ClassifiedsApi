@@ -149,8 +149,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                         name: "FK_AdvertImages_Adverts_AdvertId",
                         column: x => x.AdvertId,
                         principalTable: "Adverts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -166,13 +165,11 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Characteristics", x => new { x.Id, x.AdvertId });
-                    table.UniqueConstraint("AK_Characteristics_Name_AdvertId", x => new { x.Name, x.AdvertId });
                     table.ForeignKey(
                         name: "FK_Characteristics_Adverts_AdvertId",
                         column: x => x.AdvertId,
                         principalTable: "Adverts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -214,14 +211,13 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 name: "UserFavoriteAdverts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     AdvertId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserFavoriteAdverts", x => x.Id);
+                    table.PrimaryKey("PK_UserFavoriteAdverts", x => new { x.UserId, x.AdvertId });
                     table.ForeignKey(
                         name: "FK_UserFavoriteAdverts_Adverts_AdvertId",
                         column: x => x.AdvertId,
@@ -280,11 +276,6 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                 name: "IX_UserFavoriteAdverts_AdvertId",
                 table: "UserFavoriteAdverts",
                 column: "AdvertId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserFavoriteAdverts_UserId",
-                table: "UserFavoriteAdverts",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",

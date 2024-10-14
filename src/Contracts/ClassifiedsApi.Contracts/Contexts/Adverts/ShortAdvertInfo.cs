@@ -28,7 +28,7 @@ public class ShortAdvertInfo
     /// <summary>
     /// Идентификаторы фотографий.
     /// </summary>
-    public ICollection<Guid> ImageIds { get; set; } = null!;
+    public IReadOnlyCollection<Guid> ImageIds { get; set; } = null!;
     
     /// <summary>
     /// Неактивное объявление.

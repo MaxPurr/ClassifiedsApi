@@ -82,7 +82,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
     private static void ConfigureUserFavoriteAdvert(EntityTypeBuilder<UserFavoriteAdvert> builder)
     {
-        builder.ToTable("UserFavoriteAdverts").HasKey(userFavoriteAdvert => userFavoriteAdvert.Id);
+        builder.ToTable("UserFavoriteAdverts").HasKey(userFavoriteAdvert => 
+            new {userFavoriteAdvert.UserId, userFavoriteAdvert.AdvertId});
         builder.Property(userFavoriteAdvert => userFavoriteAdvert.CreatedAt).IsRequired();
     }
 }

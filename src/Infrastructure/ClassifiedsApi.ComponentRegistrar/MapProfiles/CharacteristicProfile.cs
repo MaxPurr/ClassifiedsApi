@@ -14,7 +14,6 @@ public class CharacteristicProfile : Profile
         CreateMap<CharacteristicAddRequest, Characteristic>(MemberList.None)
             .ForMember(characteristic => characteristic.Id, map => map.MapFrom(_ => Guid.NewGuid()))
             .ForMember(characteristic => characteristic.CreatedAt, map => map.MapFrom(_ => timeProvider.GetUtcNow().UtcDateTime))
-            .ForMember(characteristic => characteristic.AdvertId, map => map.MapFrom(request => request.AdvertId))
             .ForMember(characteristic => characteristic.Name, map => map.MapFrom(request => request.CharacteristicAdd.Name))
             .ForMember(characteristic => characteristic.Value, map => map.MapFrom(request => request.CharacteristicAdd.Value));
     }

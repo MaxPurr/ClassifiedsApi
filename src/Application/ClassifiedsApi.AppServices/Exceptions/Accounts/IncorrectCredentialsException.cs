@@ -5,7 +5,7 @@ using ClassifiedsApi.Contracts.Common.Errors;
 namespace ClassifiedsApi.AppServices.Exceptions.Accounts;
 
 /// <summary>
-/// Исключение, возникающее когда пользователь ввел неверные данные для входа в аккаунт.
+/// Исключение, возникающее когда пользователь вводит неверные данные для входа в аккаунт.
 /// </summary>
 public class IncorrectCredentialsException : ApiException
 {
@@ -18,11 +18,12 @@ public class IncorrectCredentialsException : ApiException
         
     }
     
+    /// <inheritdoc />
     public override ApiError ToApiError()
     {
         return new ApiError()
         {
-            Message = "Неверное имя пользователя или пароль.",
+            Message = "Неверный логин или пароль.",
             Code = ((int)HttpStatusCode.Unauthorized).ToString(),
         };
     }

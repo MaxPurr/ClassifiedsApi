@@ -71,6 +71,7 @@ public static class ComponentRegistrar
         services.AddScoped<ICommentVerifier, CommentVerifier>();
         services.AddScoped<IFileVerifier, FileVerifier>();
         services.AddScoped<IUserVerifier, UserVerifier>();
+        services.AddScoped<IAccountVerifier, AccountVerifier>();
         
         return services;
     }

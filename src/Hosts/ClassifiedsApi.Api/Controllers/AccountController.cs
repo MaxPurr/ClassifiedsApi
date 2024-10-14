@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
@@ -56,8 +55,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> LoginAsync([FromBody] AccountVerify accountVerify, CancellationToken token)
     {
-        var accountInfo = await _accountService.GetInfoAsync(accountVerify, token);
-        var accessToken = _jwtService.GetToken(accountInfo);
+        var accessToken = await _accountService.GetAccessTokenAsync(accountVerify, token);
         return Ok(accessToken);
     }
 }

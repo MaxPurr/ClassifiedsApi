@@ -1,13 +1,17 @@
 using System;
-using ClassifiedsApi.Domain.Base;
 
 namespace ClassifiedsApi.Domain.Entities;
 
 /// <summary>
 /// Модель избранного объявления.
 /// </summary>
-public class UserFavoriteAdvert : BaseEntity
+public class UserFavoriteAdvert
 {
+    /// <summary>
+    /// Дата и время создания.
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+    
     /// <summary>
     /// Идентификатор пользователя.
     /// </summary>

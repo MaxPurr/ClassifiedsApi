@@ -49,8 +49,6 @@ public class AdvertRepository : IAdvertRepository
     {
         var advert = await _repository
             .GetByPredicate(advert => advert.Id == id)
-            .Include(advert => advert.Images)
-            .Include(advert => advert.Characteristics)
             .ProjectTo<AdvertInfo>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(token);
         if (advert == null)
@@ -80,7 +78,6 @@ public class AdvertRepository : IAdvertRepository
     {
         var query = _repository
             .GetAll()
-            .Include(advert => advert.Images)
             .ProjectTo<ShortAdvertInfo>(_mapper.ConfigurationProvider)
             .Where(specification.PredicateExpression);
         var orderByExpression = GetOrderByExpression(order.By);

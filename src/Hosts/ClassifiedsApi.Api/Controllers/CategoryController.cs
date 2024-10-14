@@ -63,7 +63,7 @@ public class CategoryController : ControllerBase
     {
         var categoryInfo = await _service.GetInfoAsync(id, token);
         return Ok(categoryInfo);
-    }
+        }
     
     /// <summary>
     /// Метод для поиска категорий по заданному условию.
@@ -87,7 +87,7 @@ public class CategoryController : ControllerBase
     /// <param name="token">Токен отмены операции.</param>
     /// <returns></returns>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "admin")]
+    // [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

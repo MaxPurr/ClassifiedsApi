@@ -97,4 +97,10 @@ public class UserRepository : IUserRepository
     {
         return _repository.IsAnyExistAsync(user => user.Id == id, token);
     }
+    
+    /// <inheritdoc />
+    public Task<bool> IsExistsAsync(string login, CancellationToken token)
+    {
+        return _repository.IsAnyExistAsync(user => user.Login == login, token);
+    }
 }

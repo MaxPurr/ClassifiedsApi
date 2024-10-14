@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassifiedsApi.AppServices.Exceptions.Characteristics;
 
 namespace ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
 
@@ -10,7 +11,7 @@ namespace ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
 public interface ICharacteristicVerifier
 {
     /// <summary>
-    /// Проверяет доступность названия для характеристики объявления и вызывает исключение если название недоступно.
+    /// Проверяет доступность названия для характеристики объявления и вызывает исключение <see cref="UnavailableCharacteristicNameException"/> если название недоступно.
     /// </summary>
     /// <param name="advertId">Идентификатор объявления.</param>
     /// <param name="characteristicName">Название характеристики.</param>

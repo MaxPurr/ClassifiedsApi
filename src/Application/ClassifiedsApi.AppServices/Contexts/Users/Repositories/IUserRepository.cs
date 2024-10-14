@@ -50,4 +50,12 @@ public interface IUserRepository
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns><code data-dev-comment-type="langword">true</code> если пользователь найден, иначе <code data-dev-comment-type="langword">false</code>.</returns>
     Task<bool> IsExistsAsync(Guid id, CancellationToken token);
+    
+    /// <summary>
+    /// Проверяет сущетсвует ли пользователь с указаным логином.
+    /// </summary>
+    /// <param name="login">Логин пользователя.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns><code data-dev-comment-type="langword">true</code> если пользователь найден, иначе <code data-dev-comment-type="langword">false</code>.</returns>
+    Task<bool> IsExistsAsync(string login, CancellationToken token);
 }

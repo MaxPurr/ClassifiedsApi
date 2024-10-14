@@ -11,7 +11,6 @@ public class CharacteristicConfiguration : IEntityTypeConfiguration<Characterist
         builder.ToTable("Characteristics").HasKey(characteristic => new { characteristic.Id, characteristic.AdvertId});
         builder.Property(characteristic => characteristic.CreatedAt).IsRequired();
         builder.Property(characteristic => characteristic.Name).HasMaxLength(255);
-        builder.HasAlternateKey(characteristic => new {characteristic.Name, characteristic.AdvertId});
         builder.Property(characteristic => characteristic.Value).HasMaxLength(1000).IsRequired();
     }
 }
