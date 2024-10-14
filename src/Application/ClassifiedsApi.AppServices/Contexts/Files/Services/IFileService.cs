@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.Contracts.Contexts.Files;
@@ -40,4 +42,11 @@ public interface IFileService
     /// <param name="id">Идентификатор файла.</param>
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     Task DeleteAsync(Guid id, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для удаления файлов из репозитория.
+    /// </summary>
+    /// <param name="ids">Идентификаторы файлов.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    Task DeleteRangeAsync(ICollection<Guid> ids, CancellationToken token);
 }

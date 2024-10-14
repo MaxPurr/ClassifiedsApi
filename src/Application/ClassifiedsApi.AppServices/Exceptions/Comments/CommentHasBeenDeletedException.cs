@@ -13,7 +13,7 @@ public class CommentHasBeenDeletedException : ApiException
     /// Инициализирует экземпляр класса <see cref="CommentHasBeenDeletedException"/>.
     /// </summary>
     public CommentHasBeenDeletedException() 
-        : base("Операции с комментарием более недоступны, поскольку он был удален.", HttpStatusCode.BadRequest)
+        : base("Операции с комментарием более недоступны, поскольку он был удален.", HttpStatusCode.Conflict)
     {
         
     }
@@ -24,7 +24,7 @@ public class CommentHasBeenDeletedException : ApiException
         return new ApiError
         {
             Message = Message,
-            Code = ((int)HttpStatusCode.BadRequest).ToString(),
+            Code = ((int)HttpStatusCode.Conflict).ToString(),
         };
     }
 }

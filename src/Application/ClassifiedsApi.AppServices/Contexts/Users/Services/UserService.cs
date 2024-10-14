@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Common.Services;
-using ClassifiedsApi.AppServices.Contexts.Files.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
 using ClassifiedsApi.AppServices.Contexts.Users.Repositories;
 using ClassifiedsApi.Contracts.Contexts.Files;
@@ -14,19 +13,19 @@ namespace ClassifiedsApi.AppServices.Contexts.Users.Services;
 public class UserService : ServiceBase, IUserService
 {
     private readonly IUserRepository _repository;
-    private readonly IFileRepository _fileRepository;
+    private readonly IFileService _fileService;
     private readonly IFileVerifier _fileVerifier;
 
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="UserService"/>.
     /// </summary>
     /// <param name="repository">Репозиторий пользователей <see cref="IUserRepository"/>.</param>
-    /// <param name="fileRepository">Репозиторий файлов <see cref="IFileRepository"/>.</param>
+    /// <param name="fileService">Сервис файлов <see cref="IFileService"/>.</param>
     /// <param name="fileVerifier">Верификатор файлов <see cref="IFileVerifier"/>.</param>
-    public UserService(IUserRepository repository, IFileRepository fileRepository, IFileVerifier fileVerifier)
+    public UserService(IUserRepository repository, IFileService fileService, IFileVerifier fileVerifier)
     {
         _repository = repository;
-        _fileRepository = fileRepository;
+        _fileService = fileService;
         _fileVerifier = fileVerifier;
     }
     
@@ -48,11 +47,11 @@ public class UserService : ServiceBase, IUserService
         _fileVerifier.VerifyImageContentTypeAndThrow(photoUpload.ContentType);
         
         using var scope = CreateTransactionScope();
-        var photoId = await _fileRepository.UploadAsync(photoUpload, token);
+        var photoId = await _fileService.UploadAsync(photoUpload, token);
         var prevPhotoId = await _repository.UpdatePhotoAsync(id, photoId, token);
         if (prevPhotoId.HasValue)
         {
-            await _fileRepository.DeleteAsync(prevPhotoId.Value, token);
+            await _fileService.DeleteAsync(prevPhotoId.Value, token);
         }
         scope.Complete();
         return photoId;
@@ -63,7 +62,7 @@ public class UserService : ServiceBase, IUserService
     {
         using var scope = CreateTransactionScope();
         var photoId = await _repository.DeletePhotoAsync(id, token);
-        await _fileRepository.DeleteAsync(photoId, token);
+        await _fileService.DeleteAsync(photoId, token);
         scope.Complete();
     }
 }

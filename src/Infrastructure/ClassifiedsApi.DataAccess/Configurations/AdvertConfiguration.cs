@@ -18,12 +18,12 @@ public class AdvertConfiguration : IEntityTypeConfiguration<Advert>
             .WithOne(characteristic => characteristic.Advert)
             .HasForeignKey(characteristic => characteristic.AdvertId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
         builder.HasMany(advert => advert.Images)
             .WithOne(advertPhoto => advertPhoto.Advert)
             .HasForeignKey(advertPhoto => advertPhoto.AdvertId)
             .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
         builder.HasMany(advert => advert.Comments)
             .WithOne(comment => comment.Advert)
             .HasForeignKey(comment => comment.AdvertId)

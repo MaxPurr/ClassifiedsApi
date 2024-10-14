@@ -5,10 +5,6 @@ namespace ClassifiedsApi.Contracts.Contexts.Characteristics;
 /// </summary>
 public class CharacteristicAddRequest
 {
-    /// <summary>
-    /// Идентификатор пользователя.
-    /// </summary>
-    public required Guid UserId { get; init; }
     
     /// <summary>
     /// Идентификатор объявления.

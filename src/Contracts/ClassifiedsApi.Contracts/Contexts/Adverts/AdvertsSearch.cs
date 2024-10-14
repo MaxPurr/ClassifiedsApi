@@ -13,11 +13,6 @@ public class AdvertsSearch : BasePagination
     public bool? IncludeDisabled { get; set; }
     
     /// <summary>
-    /// Не включать объявления без фотографий.
-    /// </summary>
-    public bool? ExcludeWithoutImages { get; set; }
-    
-    /// <summary>
     /// Модель поиска по тексту.
     /// </summary>
     public TextFilter? TextFilter { get; set; }

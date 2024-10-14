@@ -13,7 +13,7 @@ public class UnavailableCharacteristicNameException : ApiException
     /// Инициализирует экземпляр класса <see cref="UnavailableCharacteristicNameException"/>.
     /// </summary>
     public UnavailableCharacteristicNameException() 
-        : base("Характеристика объявления с таким названием уже существует.", HttpStatusCode.BadRequest)
+        : base("Характеристика объявления с таким названием уже существует.", HttpStatusCode.Conflict)
     {
         
     }
@@ -24,7 +24,7 @@ public class UnavailableCharacteristicNameException : ApiException
         return new ApiError
         {
             Message = Message,
-            Code = ((int)HttpStatusCode.BadRequest).ToString(),
+            Code = ((int)HttpStatusCode.Conflict).ToString(),
         };
     }
 }

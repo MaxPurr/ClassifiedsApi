@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using AutoMapper;
-using ClassifiedsApi.AppServices.Helpers;
 using ClassifiedsApi.Contracts.Contexts.Accounts;
 using ClassifiedsApi.Domain.Entities;
 
@@ -11,11 +10,9 @@ public class AccountProfile : Profile
 {
     public AccountProfile(TimeProvider timeProvider)
     {
-        CreateMap<AccountRegister, User>(MemberList.None)
+        CreateMap<AccountRegisterRequest, User>(MemberList.None)
             .ForMember(user => user.Id, map => map.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(user => user.CreatedAt, map => map.MapFrom(_ => timeProvider.GetUtcNow().UtcDateTime))
-            .ForMember(user => user.PasswordHash, 
-                map => map.MapFrom(register => CryptoHelper.GetBase64Hash(register.Password)));
+            .ForMember(user => user.CreatedAt, map => map.MapFrom(_ => timeProvider.GetUtcNow().UtcDateTime));
 
         CreateMap<User, AccountInfo>(MemberList.None)
             .ForMember(info => info.RoleNames, map => map.MapFrom(user => user.Roles.Select(role => role.Name)));

@@ -33,6 +33,11 @@ public class Startup {
             var connectionString = _configuration.GetConnectionString("ApplicationDbConnectionString");
             options.UseNpgsql(connectionString);
         });
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = _configuration.GetConnectionString("RedisConnectionString");
+            options.InstanceName = _configuration["RedisInstanceName"];
+        });
         services.Configure<JwtSettings>(_configuration.GetSection(nameof(JwtSettings)));
         services.AddApplicationServices();
     }

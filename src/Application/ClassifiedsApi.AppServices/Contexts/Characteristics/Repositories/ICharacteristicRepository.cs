@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.Contracts.Contexts.Characteristics;
@@ -26,6 +27,14 @@ public interface ICharacteristicRepository
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task DeleteAsync(Guid advertId, Guid id, CancellationToken token);
+    
+    /// <summary>
+    /// Метод для удаления всех характеристик объявления.
+    /// </summary>
+    /// <param name="advertId">Идентификатор объявления.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task DeleteByAdvertIdAsync(Guid advertId, CancellationToken token);
 
     /// <summary>
     /// Метод для обновления характеристики объявления.
@@ -36,7 +45,15 @@ public interface ICharacteristicRepository
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Модель обновленной характеристики объявления.</returns>
     Task<CharacteristicInfo> UpdateAsync(Guid advertId, Guid id, CharacteristicUpdate characteristicUpdate, CancellationToken token);
-
+    
+    /// <summary>
+    /// Метод для получения всех характеристик объявления.
+    /// </summary>
+    /// <param name="advertId">Идентификатор объявления.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Список характеристик.</returns>
+    Task<IReadOnlyCollection<CharacteristicInfo>> GetByAdvertIdAsync(Guid advertId, CancellationToken token);
+    
     /// <summary>
     /// Проверяет существует ли характеристика объявления с указанным названием.
     /// </summary>

@@ -5,7 +5,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Repositories;
 using ClassifiedsApi.AppServices.Exceptions.Accounts;
-using ClassifiedsApi.AppServices.Helpers;
 using ClassifiedsApi.Contracts.Contexts.Accounts;
 using ClassifiedsApi.DataAccess.DbContexts;
 using ClassifiedsApi.Domain.Entities;
@@ -32,20 +31,18 @@ public class AccountRepository : IAccountRepository
     }
     
     /// <inheritdoc/>
-    public async Task<Guid> RegisterAsync(AccountRegister accountRegister, CancellationToken token)
+    public async Task<Guid> RegisterAsync(AccountRegisterRequest registerRequest, CancellationToken token)
     {
-        var user = _mapper.Map<User>(accountRegister);
+        var user = _mapper.Map<User>(registerRequest);
         await _repository.AddAsync(user, token);
         return user.Id;
     }
 
-    public async Task<AccountInfo> GetInfoAsync(AccountVerify accountVerify, CancellationToken token)
+    public async Task<AccountInfo> GetInfoAsync(AccountVerifyRequest verifyRequest, CancellationToken token)
     {
-        var passwordHash = CryptoHelper.GetBase64Hash(accountVerify.Password);
         var accountInfo = await _repository.GetByPredicate(user => 
-                user.Login == accountVerify.Login && 
-                user.PasswordHash == passwordHash
-            )
+                user.Login == verifyRequest.Login && 
+                user.PasswordHash == verifyRequest.PasswordHash)
             .Include(user => user.Roles)
             .ProjectTo<AccountInfo>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(token);

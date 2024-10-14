@@ -12,7 +12,8 @@ public class InvalidImageContentTypeException : ApiException
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="InvalidImageContentTypeException"/>.
     /// </summary>
-    public InvalidImageContentTypeException() : base("Недопустимый тип файла изображения.", HttpStatusCode.BadRequest)
+    public InvalidImageContentTypeException() 
+        : base("Недопустимый тип файла изображения.", HttpStatusCode.UnsupportedMediaType)
     {
         
     }
@@ -23,7 +24,7 @@ public class InvalidImageContentTypeException : ApiException
         return new ApiError
         {
             Message = Message,
-            Code = ((int)HttpStatusCode.BadRequest).ToString(),
+            Code = ((int)HttpStatusCode.UnsupportedMediaType).ToString(),
         };
     }
 }

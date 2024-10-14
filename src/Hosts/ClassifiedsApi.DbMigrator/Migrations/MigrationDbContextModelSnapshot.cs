@@ -124,8 +124,6 @@ namespace ClassifiedsApi.DbMigrator.Migrations
 
                     b.HasKey("Id", "AdvertId");
 
-                    b.HasAlternateKey("Name", "AdvertId");
-
                     b.HasIndex("AdvertId");
 
                     b.ToTable("Characteristics", (string)null);
@@ -274,8 +272,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
 
             modelBuilder.Entity("ClassifiedsApi.Domain.Entities.UserFavoriteAdvert", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AdvertId")
@@ -284,14 +281,9 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "AdvertId");
 
                     b.HasIndex("AdvertId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserFavoriteAdverts", (string)null);
                 });
@@ -344,7 +336,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.HasOne("ClassifiedsApi.Domain.Entities.Advert", "Advert")
                         .WithMany("Images")
                         .HasForeignKey("AdvertId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Advert");
@@ -365,7 +357,7 @@ namespace ClassifiedsApi.DbMigrator.Migrations
                     b.HasOne("ClassifiedsApi.Domain.Entities.Advert", "Advert")
                         .WithMany("Characteristics")
                         .HasForeignKey("AdvertId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Advert");

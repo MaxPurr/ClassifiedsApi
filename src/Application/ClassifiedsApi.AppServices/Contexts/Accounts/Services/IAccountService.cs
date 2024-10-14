@@ -18,5 +18,11 @@ public interface IAccountService
     /// <returns>Идентификатор нового аккаунта <see cref="Guid"/>.</returns>
     Task<Guid> RegisterAsync(AccountRegister accountRegister, CancellationToken token);
     
-    Task<AccountInfo> GetInfoAsync(AccountVerify accountVerify, CancellationToken token);
+    /// <summary>
+    /// Метод для получения токена доступа.
+    /// </summary>
+    /// <param name="accountVerify">Модель для проверки учетных данных аккаунта <see cref="AccountVerify"/>.</param>
+    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
+    /// <returns>Токен доступа.</returns>
+    Task<string> GetAccessTokenAsync(AccountVerify accountVerify, CancellationToken token);
 }
