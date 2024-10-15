@@ -10,10 +10,15 @@ services:
       - "POSTGRES_DB=classifieds-db"
       - "POSTGRES_HOST_AUTH_METHOD=trust"
     ports:
-      - "5432:5432"
+      - "15432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
   redis:
     image: redis
     restart: always
     container_name: local-redis
     ports:
-      - "6379:6379"
+      - "16379:6379"
+
+volumes:
+  pg-data:

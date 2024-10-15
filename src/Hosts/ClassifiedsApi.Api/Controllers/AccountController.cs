@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
+using ClassifiedsApi.Contracts.Common.Errors;
 using ClassifiedsApi.Contracts.Contexts.Accounts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,7 @@ public class AccountController : ControllerBase
     /// <returns>Идентификатор нового аккаунта.</returns>
     [HttpPost("register")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> RegisterAsync([FromBody] AccountRegister accountRegister, CancellationToken token)
     {
         var id = await _accountService.RegisterAsync(accountRegister, token);

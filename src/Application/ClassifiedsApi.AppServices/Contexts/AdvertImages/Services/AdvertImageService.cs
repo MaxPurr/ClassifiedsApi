@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using ClassifiedsApi.AppServices.Common.Services;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
-using ClassifiedsApi.AppServices.Contexts.Users.Services;
+using ClassifiedsApi.AppServices.Contexts.Files.Validators;
+using ClassifiedsApi.AppServices.Contexts.Users.Validators;
 using ClassifiedsApi.AppServices.Extensions;
 using ClassifiedsApi.Contracts.Contexts.Files;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 
@@ -22,8 +24,11 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
     private readonly IAdvertImageRepository _advertImageRepository;
     private readonly IFileService _fileService;
     private readonly IDistributedCache _cache;
-    private readonly IUserAccessVerifier _userAccessVerifier;
-    private readonly IFileVerifier _fileVerifier;
+    private readonly IUserAccessValidator _userAccessValidator;
+    private readonly IFileValidator _fileValidator;
+    
+    private readonly ILogger<AdvertImageService> _logger;
+    private readonly IStructuralLoggingService _logService;
 
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="AdvertImageService"/>.
@@ -31,19 +36,25 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
     /// <param name="advertImageRepository">Репозиторий фотографий объявлений <see cref="IAdvertImageRepository"/>.</param>
     /// <param name="fileService">Сервис файлов <see cref="IFileService"/>.</param>
     /// <param name="cache">Распределенный кэш <see cref="IDistributedCache"/>.</param>
-    /// <param name="userAccessVerifier">Верификатор прав пользователя <see cref="IUserAccessVerifier"/>.</param>
-    /// <param name="fileVerifier">Верификатор файлов <see cref="IFileVerifier"/>.</param>
+    /// <param name="userAccessValidator">Валидатор прав пользователей <see cref="IUserAccessValidator"/>.</param>
+    /// <param name="fileValidator">Валидатор файлов <see cref="IFileValidator"/>.</param>
+    /// <param name="logger">Логгер.</param>
+    /// <param name="logService">Сервис структурного логирования <see cref="IStructuralLoggingService"/>.</param>
     public AdvertImageService(
         IAdvertImageRepository advertImageRepository,
         IFileService fileService,
         IDistributedCache cache,
-        IUserAccessVerifier userAccessVerifier,
-        IFileVerifier fileVerifier)
+        IUserAccessValidator userAccessValidator,
+        IFileValidator fileValidator,
+        ILogger<AdvertImageService> logger, 
+        IStructuralLoggingService logService)
     {
         _advertImageRepository = advertImageRepository;
-        _userAccessVerifier = userAccessVerifier;
+        _userAccessValidator = userAccessValidator;
         _fileService = fileService;
-        _fileVerifier = fileVerifier;
+        _fileValidator = fileValidator;
+        _logger = logger;
+        _logService = logService;
         _cache = cache;
     }
 
@@ -52,51 +63,77 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
         return string.Format(CacheKeyFormat, advertId);
     }
 
-    private Task ClearCacheAsync(Guid advertId, CancellationToken token)
+    private async Task ClearCacheAsync(Guid advertId, CancellationToken token)
     {
         var cacheKey = GetCacheKey(advertId);
-        return _cache.RemoveAsync(cacheKey, token);
+        await _cache.RemoveAsync(cacheKey, token);
+        _logger.LogInformation("Кэш фотографий объявления очищен.");
     }
     
     /// <inheritdoc />
     public async Task<Guid> UploadAsync(Guid userId, Guid advertId, FileUpload imageUpload, CancellationToken token)
     {
-        await _userAccessVerifier.VerifyAdvertAccessAndThrowAsync(userId, advertId, token);
-        _fileVerifier.VerifyImageContentTypeAndThrow(imageUpload.ContentType);
+        using (_logService.PushProperty("UserId", userId))
+        using (_logService.PushProperty("AdvertId", advertId))
+        {
+            _logger.LogInformation("Запрос на добавление фотографии объявления.");
+            
+            _fileValidator.ValidateImageContentTypeAndThrow(imageUpload.ContentType);
+            await _userAccessValidator.ValidateAdvertAccessAndThrowAsync(userId, advertId, token);
         
-        await ClearCacheAsync(advertId, token);
+            await ClearCacheAsync(advertId, token);
         
-        using var scope = CreateTransactionScope();
-        var imageId = await _fileService.UploadAsync(imageUpload, token);
-        await _advertImageRepository.AddAsync(advertId, imageId, token);
-        scope.Complete();
-        return imageId;
+            using var scope = CreateTransactionScope();
+            var imageId = await _fileService.UploadAsync(imageUpload, token);
+            await _advertImageRepository.AddAsync(advertId, imageId, token);
+            scope.Complete();
+            _logger.LogInformation("Фотография объявления успешно добавлена. Идентификатор фотографии: {ImageId}", imageId);
+            
+            return imageId;
+        }
     }
     
     /// <inheritdoc />
     public async Task DeleteAsync(Guid userId, Guid advertId, Guid imageId, CancellationToken token)
     {
-        await _userAccessVerifier.VerifyAdvertAccessAndThrowAsync(userId, advertId, token);
+        using (_logService.PushProperty("UserId", userId))
+        using (_logService.PushProperty("AdvertId", advertId))
+        using (_logService.PushProperty("ImageId", imageId))
+        {
+            _logger.LogInformation("Запрос на удаление фотографии объявления.");
+            
+            await _userAccessValidator.ValidateAdvertAccessAndThrowAsync(userId, advertId, token);
         
-        await ClearCacheAsync(advertId, token);
+            await ClearCacheAsync(advertId, token);
         
-        using var scope = CreateTransactionScope();
-        await _advertImageRepository.DeleteAsync(advertId, imageId, token);
-        await _fileService.DeleteAsync(imageId, token);
-        scope.Complete();
+            using var scope = CreateTransactionScope();
+            await _advertImageRepository.DeleteAsync(advertId, imageId, token);
+            await _fileService.DeleteAsync(imageId, token);
+            scope.Complete();
+            
+            _logger.LogInformation("Фотография объявления успешно удалена.");
+        }
     }
     
     /// <inheritdoc />
     public async Task<IReadOnlyCollection<Guid>> GetByAdvertIdAsync(Guid advertId, CancellationToken token)
     {
+        _logger.LogInformation("Получение идентификаторов фотографий объявления.");
+        
         var cacheKey = GetCacheKey(advertId);
         var ids = await _cache.GetAsync<IReadOnlyCollection<Guid>>(cacheKey, token);
         if (ids != null)
         {
+            _logger.LogInformation("Идентификаторы фотографий объявления получены из кэша.");
             return ids;
         }
+        
         ids = await _advertImageRepository.GetByAdvertIdAsync(advertId, token);
+        _logger.LogInformation("Идентификаторы фотографий объявления получены из базы данных.");
+        
         await _cache.SetAsync(cacheKey, ids, CacheExpirationTime, token);
+        _logger.LogInformation("Идентификаторы фотографий объявления добавлены в кэш.");
+        
         return ids;
     }
 
@@ -105,9 +142,13 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
     {
         await ClearCacheAsync(advertId, token);
         
+        _logger.LogInformation("Запрос на удаление фотографий объявления.");
+        
         using var scope = CreateTransactionScope();
         var imageIds = await _advertImageRepository.DeleteByAdvertIdAsync(advertId, token);
         await _fileService.DeleteRangeAsync(imageIds.ToList(), token);
         scope.Complete();
+        
+        _logger.LogInformation("Фотографии объявления успешно удалены.");
     }
 }

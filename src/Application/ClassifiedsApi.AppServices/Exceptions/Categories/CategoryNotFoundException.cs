@@ -10,7 +10,16 @@ public class CategoryNotFoundException : EntityNotFoundException
     /// <summary>
     /// Инициализирует экземпляр <see cref="CategoryNotFoundException"/>.
     /// </summary>
-    public CategoryNotFoundException() : base("Категория не была найдена.")
+    public CategoryNotFoundException() : this("Категория не была найдена.")
+    {
+        
+    }
+    
+    /// <summary>
+    /// Инициализирует экземпляр <see cref="CategoryNotFoundException"/>.
+    /// </summary>
+    /// <param name="message">Сообщение.</param>
+    public CategoryNotFoundException(string message) : base(message)
     {
         
     }

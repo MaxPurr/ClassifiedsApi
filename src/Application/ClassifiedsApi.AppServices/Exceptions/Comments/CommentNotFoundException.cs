@@ -10,7 +10,16 @@ public class CommentNotFoundException : EntityNotFoundException
     /// <summary>
     /// Инициализирует экземпляр <see cref="CommentNotFoundException"/>.
     /// </summary>
-    public CommentNotFoundException() : base("Комментарий не был найден.")
+    public CommentNotFoundException() : this("Комментарий не был найден.")
+    {
+        
+    }
+
+    /// <summary>
+    /// Инициализирует экземпляр <see cref="CommentNotFoundException"/>.
+    /// </summary>
+    /// <param name="message">Сообщение.</param>
+    public CommentNotFoundException(string message) : base(message)
     {
         
     }

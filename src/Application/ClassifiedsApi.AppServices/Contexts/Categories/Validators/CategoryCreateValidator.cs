@@ -26,8 +26,7 @@ public class CategoryCreateValidator : AbstractValidator<CategoryCreate>
         {
             RuleFor(categoryCreate => categoryCreate.ParentId)
                 .Cascade(CascadeMode.Stop)
-                .NotEqual(Guid.Empty)
-                .SetValidator(new CategoryExistsValidator(categoryRepository));
+                .NotEqual(Guid.Empty);
         });
     }
 }

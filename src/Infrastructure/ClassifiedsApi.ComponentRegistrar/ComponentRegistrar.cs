@@ -1,30 +1,38 @@
 using System;
 using System.Reflection;
 using AutoMapper;
+using ClassifiedsApi.AppServices.Common.Services;
 using ClassifiedsApi.AppServices.Common.Validators;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Accounts.Services;
+using ClassifiedsApi.AppServices.Contexts.Accounts.Validators;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Repositories;
 using ClassifiedsApi.AppServices.Contexts.AdvertImages.Services;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Builders;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Adverts.Services;
+using ClassifiedsApi.AppServices.Contexts.Adverts.Validators;
 using ClassifiedsApi.AppServices.Contexts.Categories.Builders;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Categories.Services;
 using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Characteristics.Services;
+using ClassifiedsApi.AppServices.Contexts.Characteristics.Validators;
 using ClassifiedsApi.AppServices.Contexts.Comments.Builders;
 using ClassifiedsApi.AppServices.Contexts.Comments.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Comments.Services;
+using ClassifiedsApi.AppServices.Contexts.Comments.Validators;
 using ClassifiedsApi.AppServices.Contexts.Files.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Files.Services;
+using ClassifiedsApi.AppServices.Contexts.Files.Validators;
 using ClassifiedsApi.AppServices.Contexts.Users.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Users.Services;
+using ClassifiedsApi.AppServices.Contexts.Users.Validators;
 using ClassifiedsApi.ComponentRegistrar.MapProfiles;
 using ClassifiedsApi.DataAccess.Repositories;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
+using ClassifiedsApi.Infrastructure.Services.Logging;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +43,7 @@ public static class ComponentRegistrar
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(ISqlRepository<,>), typeof(SqlRepository<,>));
+        services.AddScoped<IStructuralLoggingService, StructuralLoggingService>();
         services.AddSingleton(TimeProvider.System);
         
         services.AddSingleton<IMapper>(provider => new Mapper(GetMapperConfiguration(provider)));
@@ -65,13 +74,14 @@ public static class ComponentRegistrar
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IUserService, UserService>();
         
-        services.AddScoped<IUserAccessVerifier, UserAccessVerifier>();
-        services.AddScoped<ICharacteristicVerifier, CharacteristicVerifier>();
-        services.AddScoped<IAdvertVerifier, AdvertVerifier>();
-        services.AddScoped<ICommentVerifier, CommentVerifier>();
-        services.AddScoped<IFileVerifier, FileVerifier>();
-        services.AddScoped<IUserVerifier, UserVerifier>();
-        services.AddScoped<IAccountVerifier, AccountVerifier>();
+        services.AddScoped<IUserAccessValidator, UserAccessValidator>();
+        services.AddScoped<ICharacteristicValidator, CharacteristicValidator>();
+        services.AddScoped<IAdvertValidator, AdvertValidator>();
+        services.AddScoped<ICommentValidator, CommentValidator>();
+        services.AddScoped<IFileValidator, FileValidator>();
+        services.AddScoped<IUserValidator, UserValidator>();
+        services.AddScoped<IAccountValidator, AccountValidator>();
+        services.AddScoped<ICategoryValidator, CategoryValidator>();
         
         return services;
     }

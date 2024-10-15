@@ -52,7 +52,7 @@ public class CommentController : BaseApplicationController
     /// <summary>
     /// Метод для удаления комментария.
     /// </summary>
-    /// <param name="id">Идентификатор объявления.</param>
+    /// <param name="id">Идентификатор комментария.</param>
     /// <param name="token">Токен отмены операции.</param>
     /// <returns></returns>
     [HttpDelete("{id:guid}")]

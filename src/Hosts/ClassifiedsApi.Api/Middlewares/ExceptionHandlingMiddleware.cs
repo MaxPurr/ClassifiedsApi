@@ -6,9 +6,12 @@ using ClassifiedsApi.AppServices.Extensions;
 using ClassifiedsApi.Contracts.Common.Errors;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Serilog.Context;
 
 namespace ClassifiedsApi.Api.Middlewares;
 
@@ -28,19 +31,29 @@ public class ExceptionHandlingMiddleware
         Code = StatusCodes.Status500InternalServerError.ToString(),
     };
     
-    private readonly RequestDelegate _next;
+    private const string LogTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode}";
     
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+
     /// <summary>
     /// Инициализирует экземпляр класса <see cref="ExceptionHandlingMiddleware"/>.
     /// </summary>
     /// <param name="next">Делегат запроса.</param>
+    /// <param name="logger">Логгер.</param>
     /// <exception cref="ArgumentNullException">Выбрасывает исключение если параметр next равен null.</exception>
-    public ExceptionHandlingMiddleware(RequestDelegate next)
+    public ExceptionHandlingMiddleware(
+        RequestDelegate next, 
+        ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
+        _logger = logger;
     }
     
-    public async Task InvokeAsync(HttpContext context, IHostEnvironment environment, IServiceProvider serviceProvider)
+    public async Task InvokeAsync(
+        HttpContext context, 
+        IHostEnvironment environment, 
+        IServiceProvider serviceProvider)
     {
         try
         {
@@ -48,10 +61,34 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception exception)
         {
+            var statusCode = GetStatusCode(exception);
+            LogError(exception, context, statusCode);
+            
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)GetStatusCode(exception);
+            context.Response.StatusCode = (int)statusCode;
             var apiError = CreateApiErrorByEnvironment(exception, context, environment);
             await context.Response.WriteAsync(Serialize(apiError));
+        }
+    }
+
+    private void LogError(Exception exception, HttpContext context, HttpStatusCode statusCode)
+    {
+        var traceId = context.TraceIdentifier;
+        var userName = context.User.Identity?.Name ?? string.Empty;
+        var connection = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
+        var displayUrl = context.Request.GetDisplayUrl();
+        
+        using (LogContext.PushProperty("Request.TraceId", traceId))
+        using (LogContext.PushProperty("Request.UserName", userName))
+        using (LogContext.PushProperty("Request.Connection", connection))
+        using (LogContext.PushProperty("Request.DisplayUrl", displayUrl))
+        {
+            _logger.LogError(
+                exception, 
+                LogTemplate,
+                context.Request.Method,
+                context.Request.Path.ToString(),
+                (int)statusCode);
         }
     }
 

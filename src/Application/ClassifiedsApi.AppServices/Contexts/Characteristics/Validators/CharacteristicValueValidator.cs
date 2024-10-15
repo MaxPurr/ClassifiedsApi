@@ -16,8 +16,6 @@ public class CharacteristicValueValidator : AbstractValidator<string?>
     public CharacteristicValueValidator()
     {
         RuleFor(value => value)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty()
             .MinimumLength(1)
             .MaximumLength(1000)
             .WithName("Value");
