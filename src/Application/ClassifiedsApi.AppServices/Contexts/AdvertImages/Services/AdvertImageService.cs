@@ -23,7 +23,7 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
     
     private readonly IAdvertImageRepository _advertImageRepository;
     private readonly IFileService _fileService;
-    private readonly IDistributedCache _cache;
+    private readonly ISerializableCache _cache;
     private readonly IUserAccessValidator _userAccessValidator;
     private readonly IFileValidator _fileValidator;
     
@@ -35,7 +35,7 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
     /// </summary>
     /// <param name="advertImageRepository">Репозиторий фотографий объявлений <see cref="IAdvertImageRepository"/>.</param>
     /// <param name="fileService">Сервис файлов <see cref="IFileService"/>.</param>
-    /// <param name="cache">Распределенный кэш <see cref="IDistributedCache"/>.</param>
+    /// <param name="cache">Сериализуемый кэш <see cref="ISerializableCache"/>.</param>
     /// <param name="userAccessValidator">Валидатор прав пользователей <see cref="IUserAccessValidator"/>.</param>
     /// <param name="fileValidator">Валидатор файлов <see cref="IFileValidator"/>.</param>
     /// <param name="logger">Логгер.</param>
@@ -43,7 +43,7 @@ public class AdvertImageService : ServiceBase, IAdvertImageService
     public AdvertImageService(
         IAdvertImageRepository advertImageRepository,
         IFileService fileService,
-        IDistributedCache cache,
+        ISerializableCache cache,
         IUserAccessValidator userAccessValidator,
         IFileValidator fileValidator,
         ILogger<AdvertImageService> logger, 

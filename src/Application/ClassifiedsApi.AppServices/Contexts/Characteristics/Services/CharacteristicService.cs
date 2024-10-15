@@ -21,7 +21,7 @@ public class CharacteristicService : ICharacteristicService
     private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromMinutes(5);
     
     private readonly ICharacteristicRepository _repository;
-    private readonly IDistributedCache _cache;
+    private readonly ISerializableCache _cache;
     private readonly IUserAccessValidator _userAccessValidator;
     private readonly ICharacteristicValidator _characteristicValidator;
     
@@ -35,7 +35,7 @@ public class CharacteristicService : ICharacteristicService
     /// Инициализирует экземпляр класса <see cref="CharacteristicService"/>.
     /// </summary>
     /// <param name="repository">Репозиторий характеристик объявлений <see cref="ICharacteristicRepository"/>.</param>
-    /// <param name="cache">Распределенный кэш <see cref="IDistributedCache"/>.</param>
+    /// <param name="cache">Сериализуемый кэш <see cref="ISerializableCache"/>.</param>
     /// <param name="userAccessValidator">Валидатор прав пользователя <see cref="IUserAccessValidator"/>.</param>
     /// <param name="characteristicValidator">Валидатор характеристик объявлений <see cref="ICharacteristicValidator"/>.</param>
     /// <param name="logger">Логгер.</param>
@@ -44,7 +44,7 @@ public class CharacteristicService : ICharacteristicService
     /// <param name="addValidator">Валидатор модели добавления характеристики объявления <see cref="CharacteristicAdd"/>..</param>
     public CharacteristicService(
         ICharacteristicRepository repository,
-        IDistributedCache cache,
+        ISerializableCache cache,
         IUserAccessValidator userAccessValidator,
         ICharacteristicValidator characteristicValidator,
         ILogger<CharacteristicService> logger, 

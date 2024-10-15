@@ -32,6 +32,7 @@ using ClassifiedsApi.AppServices.Contexts.Users.Validators;
 using ClassifiedsApi.ComponentRegistrar.MapProfiles;
 using ClassifiedsApi.DataAccess.Repositories;
 using ClassifiedsApi.Infrastructure.Repository.Sql;
+using ClassifiedsApi.Infrastructure.Services.Cache;
 using ClassifiedsApi.Infrastructure.Services.Logging;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,7 @@ public static class ComponentRegistrar
     {
         services.AddScoped(typeof(ISqlRepository<,>), typeof(SqlRepository<,>));
         services.AddScoped<IStructuralLoggingService, StructuralLoggingService>();
+        services.AddSingleton<ISerializableCache, SerializableCache>();
         services.AddSingleton(TimeProvider.System);
         
         services.AddSingleton<IMapper>(provider => new Mapper(GetMapperConfiguration(provider)));

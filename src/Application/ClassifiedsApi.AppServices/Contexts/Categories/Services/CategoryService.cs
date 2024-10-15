@@ -7,10 +7,8 @@ using ClassifiedsApi.AppServices.Contexts.Categories.Builders;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
 using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.AppServices.Exceptions.Categories;
-using ClassifiedsApi.AppServices.Extensions;
 using ClassifiedsApi.Contracts.Contexts.Categories;
 using FluentValidation;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace ClassifiedsApi.AppServices.Contexts.Categories.Services;
@@ -22,7 +20,7 @@ public class CategoryService : ICategoryService
     private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromMinutes(5);
     
     private readonly ICategoryRepository _repository;
-    private readonly IDistributedCache _cache;
+    private readonly ISerializableCache _cache;
     private readonly ICategorySpecificationBuilder _specificationBuilder;
     private readonly ICategoryValidator _categoryValidator;
     
@@ -37,7 +35,7 @@ public class CategoryService : ICategoryService
     /// Инициализирует экземпляр класса <see cref="CategoryService"/>.
     /// </summary>
     /// <param name="repository">Репозиторий файлов <see cref="ICategoryRepository"/>.</param>
-    /// <param name="cache">Распределенный кэш <see cref="IDistributedCache"/>.</param>
+    /// <param name="cache">Сериализуемый кэш <see cref="ISerializableCache"/>.</param>
     /// <param name="specificationBuilder">Строитель спецификаций для категорий <see cref="ICategorySpecificationBuilder"/>.</param>
     /// <param name="categoryCreateValidator">Валидатор модели создания категории.</param>
     /// <param name="categoryUpdateValidator">Валидатор модели обновления категории.</param>
@@ -47,14 +45,14 @@ public class CategoryService : ICategoryService
     /// <param name="categoryValidator">Валидатор категорий.</param>
     public CategoryService(
         ICategoryRepository repository, 
-        IDistributedCache cache,
+        ISerializableCache cache,
         ICategorySpecificationBuilder specificationBuilder,
-        IValidator<CategoryCreate> categoryCreateValidator, 
-        IValidator<CategoryUpdate> categoryUpdateValidator, 
-        IValidator<CategoriesSearch> categoriesSearchValidator, 
+        ICategoryValidator categoryValidator,
         ILogger<CategoryService> logger, 
         IStructuralLoggingService logService,
-        ICategoryValidator categoryValidator)
+        IValidator<CategoryCreate> categoryCreateValidator, 
+        IValidator<CategoryUpdate> categoryUpdateValidator, 
+        IValidator<CategoriesSearch> categoriesSearchValidator)
     {
         _repository = repository;
         _cache = cache;
@@ -116,7 +114,7 @@ public class CategoryService : ICategoryService
         
         await _cache.SetAsync(CacheLabel, id, info, CacheExpirationTime, token);
         _logger.LogInformation("Информация о категории добавлена в кэш.");
-        
+
         return info;
     }
     
