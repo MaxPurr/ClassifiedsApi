@@ -38,6 +38,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{26314B
 		.dockerignore = .dockerignore
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F2022439-59C4-4799-A88A-7C4977A1221A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedsApi.UnitTests", "tests\ClassifiedsApi.UnitTests\ClassifiedsApi.UnitTests.csproj", "{C4DF841C-8DC8-41C6-9AE2-A449066127B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,7 @@ Global
 		{21DB2599-EEDA-4D1B-8BB4-734D905F013E} = {A12C3DC7-0985-4CC0-9934-AB7CF369D69D}
 		{FC40AD64-BE96-4697-89A7-02EF8BFB6149} = {1020D14F-3BCA-4F46-97E1-21697F745201}
 		{1668504A-CC7E-4411-A945-A9EB75B24365} = {1020D14F-3BCA-4F46-97E1-21697F745201}
+		{C4DF841C-8DC8-41C6-9AE2-A449066127B5} = {F2022439-59C4-4799-A88A-7C4977A1221A}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A68278C2-B27A-4CE5-849B-4383E52B5600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -91,5 +96,9 @@ Global
 		{1668504A-CC7E-4411-A945-A9EB75B24365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1668504A-CC7E-4411-A945-A9EB75B24365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1668504A-CC7E-4411-A945-A9EB75B24365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4DF841C-8DC8-41C6-9AE2-A449066127B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4DF841C-8DC8-41C6-9AE2-A449066127B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4DF841C-8DC8-41C6-9AE2-A449066127B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4DF841C-8DC8-41C6-9AE2-A449066127B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

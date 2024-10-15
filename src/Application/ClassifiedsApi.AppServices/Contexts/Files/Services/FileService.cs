@@ -18,7 +18,7 @@ public class FileService : IFileService
     private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromMinutes(5);
     
     private readonly IFileRepository _repository;
-    private readonly IDistributedCache _cache;
+    private readonly ISerializableCache _cache;
     
     private readonly ILogger<FileService> _logger;
     private readonly IStructuralLoggingService _logService;
@@ -27,12 +27,12 @@ public class FileService : IFileService
     /// Инициализирует экземпляр класса <see cref="FileService"/>.
     /// </summary>
     /// <param name="repository">Репозиторий файлов <see cref="IFileRepository"/>.</param>
-    /// <param name="cache">Распределенный кэш <see cref="IDistributedCache"/>.</param>
+    /// <param name="cache">Сериализуемый кэш <see cref="ISerializableCache"/>.</param>
     /// <param name="logger">Логгер</param>
     /// <param name="logService">Сервис структурного логирования <see cref="IStructuralLoggingService"/>.</param>
     public FileService(
         IFileRepository repository, 
-        IDistributedCache cache, 
+        ISerializableCache cache, 
         ILogger<FileService> logger, 
         IStructuralLoggingService logService)
     {
@@ -47,10 +47,10 @@ public class FileService : IFileService
         return string.Format(CacheKeyFormat, id);
     }
 
-    private async Task ClearCacheAsync(Guid id)
+    private async Task ClearCacheAsync(Guid id, CancellationToken token)
     {
         var cacheKey = GetCacheKey(id);
-        await _cache.RemoveAsync(cacheKey);
+        await _cache.RemoveAsync(cacheKey, token);
         _logger.LogInformation("Кэш файла очищен.");
     }
 
@@ -107,7 +107,7 @@ public class FileService : IFileService
         using var _ = _logService.PushProperty("FileId", id);
         _logger.LogInformation("Запрос на удаление файла.");
         
-        await ClearCacheAsync(id);
+        await ClearCacheAsync(id, token);
         
         await _repository.DeleteAsync(id, token);
         _logger.LogInformation("Файл был успешно удален из базы данных.");
@@ -121,7 +121,7 @@ public class FileService : IFileService
         
         foreach (var id in ids)
         {
-            await ClearCacheAsync(id);
+            await ClearCacheAsync(id, token);
         }
         await _repository.DeleteRangeAsync(ids, token);
         _logger.LogInformation("Файлы успешно удалены из базы данных.");
