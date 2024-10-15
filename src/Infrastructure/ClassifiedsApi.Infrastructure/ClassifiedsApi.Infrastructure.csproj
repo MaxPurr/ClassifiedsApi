@@ -7,12 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Application\ClassifiedsApi.AppServices\ClassifiedsApi.AppServices.csproj" />
       <ProjectReference Include="..\..\Domain\ClassifiedsApi.Domain\ClassifiedsApi.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
+      <PackageReference Include="Serilog" Version="4.0.2" />
     </ItemGroup>
 
 </Project>

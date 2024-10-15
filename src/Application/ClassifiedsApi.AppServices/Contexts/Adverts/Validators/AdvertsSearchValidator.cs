@@ -1,7 +1,6 @@
 using System;
 using ClassifiedsApi.AppServices.Common.Validators;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
-using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using FluentValidation;
 
@@ -33,8 +32,7 @@ public class AdvertsSearchValidator : BasePaginationValidator<AdvertsSearch>
         When(search => search.FilterByCategoryId != null, () =>
         {
             RuleFor(search => search.FilterByCategoryId)
-                .NotEqual(Guid.Empty)
-                .SetValidator(new CategoryExistsValidator(categoryRepository));
+                .NotEqual(Guid.Empty);
         }); 
         
         RuleFor(search => search.Order)

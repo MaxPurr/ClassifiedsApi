@@ -51,12 +51,4 @@ public interface ICategoryService
     /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
     /// <returns>Модель обновленной информации о категории <see cref="CategoryInfo"/>.</returns>
     Task<CategoryInfo> UpdateAsync(Guid id, CategoryUpdate categoryUpdate, CancellationToken token);
-    
-    /// <summary>
-    /// Метод для проверки существования категории.
-    /// </summary>
-    /// <param name="id">Идентификатор категории <see cref="Guid"/>.</param>
-    /// <param name="token">Токен отмены операции <see cref="CancellationToken"/>.</param>
-    /// <returns><code data-dev-comment-type="langword">true</code> если категория найдена, иначе <code data-dev-comment-type="langword">false</code>.</returns>
-    Task<bool> IsExistsAsync(Guid id, CancellationToken token);
 }

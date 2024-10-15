@@ -1,5 +1,5 @@
+using System;
 using ClassifiedsApi.AppServices.Contexts.Categories.Repositories;
-using ClassifiedsApi.AppServices.Contexts.Categories.Validators;
 using ClassifiedsApi.Contracts.Contexts.Adverts;
 using FluentValidation;
 
@@ -45,7 +45,7 @@ public class AdvertUpdateValidator : AbstractValidator<AdvertUpdate>
         When(update => update.CategoryId != null, () =>
         {
             RuleFor(update => update.CategoryId)
-                .SetValidator(new CategoryExistsValidator(categoryRepository));
+                .NotEqual(Guid.Empty);
         });
     }
     

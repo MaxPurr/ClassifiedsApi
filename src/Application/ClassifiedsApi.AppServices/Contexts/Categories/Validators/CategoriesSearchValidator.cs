@@ -20,9 +20,7 @@ public class CategoriesSearchValidator : BasePaginationValidator<CategoriesSearc
         When(search => search.FilterByParentId != null, () =>
         {
             RuleFor(search => search.FilterByParentId!.ParentId)
-                .NotEqual(Guid.Empty)
-                .SetValidator(new CategoryExistsValidator(categoryRepository))
-                .WithName("Parent Id");
+                .NotEqual(Guid.Empty);
         });
         
         When(search => search.NameFilter != null, () =>

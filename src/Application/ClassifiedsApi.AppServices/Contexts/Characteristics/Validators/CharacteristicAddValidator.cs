@@ -15,9 +15,11 @@ public class CharacteristicAddValidator : AbstractValidator<CharacteristicAdd>
     public CharacteristicAddValidator()
     {
         RuleFor(characteristicAdd => characteristicAdd.Value)
+            .NotNull()
             .SetValidator(new CharacteristicValueValidator());
 
         RuleFor(characteristicAdd => characteristicAdd.Name)
+            .NotNull()
             .SetValidator(new CharacteristicNameValidator());
     }
 }
